@@ -185,6 +185,9 @@
   var gyroEnabled = false;
   var gyroInitial = null;
   var currentScene = null;
+  var gyroSmoothing = 0.15;
+  var lastGyroYaw = null;
+  var lastGyroPitch = null;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -247,45 +250,77 @@
       return;
     }
 
+    // Use a proven DeviceOrientationControls-style conversion.
     var degToRad = Math.PI / 180;
-    var alpha = event.alpha * degToRad;
-    var beta = event.beta * degToRad;
-    var gamma = event.gamma * degToRad;
-    var screenAngle = getScreenOrientationAngle();
+    var alpha = event.alpha * degToRad; // Z
+    var beta = event.beta * degToRad;   // X'
+    var gamma = event.gamma * degToRad; // Y''
+    var screenAngle = getScreenOrientationAngle() * degToRad;
 
-    var yaw = alpha;
-    var pitch = beta;
-
-    if (screenAngle === 90) {
-      yaw = alpha + Math.PI / 2;
-      pitch = gamma;
-    } else if (screenAngle === -90 || screenAngle === 270) {
-      yaw = alpha - Math.PI / 2;
-      pitch = -gamma;
-    } else if (screenAngle === 180) {
-      yaw = alpha + Math.PI;
-      pitch = -beta;
-    }
+    var euler = deviceOrientationToEuler(alpha, beta, gamma, screenAngle);
 
     var params = currentScene.view.parameters();
     if (!gyroInitial) {
       gyroInitial = {
-        yaw: yaw,
-        pitch: pitch,
+        yaw: euler.yaw,
+        pitch: euler.pitch,
         viewYaw: params.yaw,
         viewPitch: params.pitch
       };
     }
 
-    var nextYaw = gyroInitial.viewYaw + (yaw - gyroInitial.yaw);
-    var nextPitch = gyroInitial.viewPitch + (pitch - gyroInitial.pitch);
+    var nextYaw = gyroInitial.viewYaw + (euler.yaw - gyroInitial.yaw);
+    var nextPitch = gyroInitial.viewPitch + (euler.pitch - gyroInitial.pitch);
+
     nextPitch = clamp(nextPitch, -Math.PI / 2, Math.PI / 2);
 
+    if (lastGyroYaw === null) {
+      lastGyroYaw = nextYaw;
+      lastGyroPitch = nextPitch;
+    } else {
+      lastGyroYaw = lastGyroYaw + (nextYaw - lastGyroYaw) * gyroSmoothing;
+      lastGyroPitch = lastGyroPitch + (nextPitch - lastGyroPitch) * gyroSmoothing;
+    }
+
     currentScene.view.setParameters({
-      yaw: nextYaw,
-      pitch: nextPitch,
+      yaw: lastGyroYaw,
+      pitch: lastGyroPitch,
       fov: params.fov
     });
+  }
+
+  function deviceOrientationToEuler(alpha, beta, gamma, orient) {
+    // Based on THREE.DeviceOrientationControls math.
+    var c1 = Math.cos(alpha / 2);
+    var c2 = Math.cos(beta / 2);
+    var c3 = Math.cos(gamma / 2);
+    var s1 = Math.sin(alpha / 2);
+    var s2 = Math.sin(beta / 2);
+    var s3 = Math.sin(gamma / 2);
+
+    // Z-X'-Y'' intrinsic rotations
+    var qx = s1 * c2 * c3 + c1 * s2 * s3;
+    var qy = c1 * s2 * c3 - s1 * c2 * s3;
+    var qz = c1 * c2 * s3 + s1 * s2 * c3;
+    var qw = c1 * c2 * c3 - s1 * s2 * s3;
+
+    // Apply screen orientation
+    var halfOrient = orient / 2;
+    var so = Math.sin(halfOrient);
+    var co = Math.cos(halfOrient);
+    var qxo = qx * co + qz * so;
+    var qyo = qy * co - qw * so;
+    var qzo = qz * co + qx * so;
+    var qwo = qw * co - qy * so;
+
+    // Convert quaternion to Euler YXZ (yaw, pitch)
+    var test = 2 * (qyo * qwo - qxo * qzo);
+    test = clamp(test, -1, 1);
+
+    var pitch = Math.asin(test);
+    var yaw = Math.atan2(2 * (qxo * qwo + qyo * qzo), 1 - 2 * (qxo * qxo + qyo * qyo));
+
+    return { yaw: yaw, pitch: pitch };
   }
 
   function sanitize(s) {
@@ -301,6 +336,8 @@
     updateSceneList(scene);
     currentScene = scene;
     gyroInitial = null;
+    lastGyroYaw = null;
+    lastGyroPitch = null;
   }
 
   function updateSceneName(scene) {
