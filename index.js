@@ -291,36 +291,56 @@
 
   function deviceOrientationToEuler(alpha, beta, gamma, orient) {
     // Based on THREE.DeviceOrientationControls math.
-    var c1 = Math.cos(alpha / 2);
-    var c2 = Math.cos(beta / 2);
-    var c3 = Math.cos(gamma / 2);
-    var s1 = Math.sin(alpha / 2);
-    var s2 = Math.sin(beta / 2);
-    var s3 = Math.sin(gamma / 2);
+    // Euler order YXZ: x = beta, y = alpha, z = -gamma
+    var x = beta;
+    var y = alpha;
+    var z = -gamma;
 
-    // Z-X'-Y'' intrinsic rotations
+    var c1 = Math.cos(x / 2);
+    var c2 = Math.cos(y / 2);
+    var c3 = Math.cos(z / 2);
+    var s1 = Math.sin(x / 2);
+    var s2 = Math.sin(y / 2);
+    var s3 = Math.sin(z / 2);
+
+    // Quaternion from Euler (YXZ)
     var qx = s1 * c2 * c3 + c1 * s2 * s3;
     var qy = c1 * s2 * c3 - s1 * c2 * s3;
-    var qz = c1 * c2 * s3 + s1 * s2 * c3;
-    var qw = c1 * c2 * c3 - s1 * s2 * s3;
+    var qz = c1 * c2 * s3 - s1 * s2 * c3;
+    var qw = c1 * c2 * c3 + s1 * s2 * s3;
 
-    // Apply screen orientation
-    var halfOrient = orient / 2;
+    // Apply -PI/2 rotation around X (camera look direction alignment)
+    var q1x = -Math.SQRT1_2;
+    var q1y = 0;
+    var q1z = 0;
+    var q1w = Math.SQRT1_2;
+    var tqx = qw * q1x + qx * q1w + qy * q1z - qz * q1y;
+    var tqy = qw * q1y - qx * q1z + qy * q1w + qz * q1x;
+    var tqz = qw * q1z + qx * q1y - qy * q1x + qz * q1w;
+    var tqw = qw * q1w - qx * q1x - qy * q1y - qz * q1z;
+
+    // Apply screen orientation around Z
+    var halfOrient = -orient / 2;
     var so = Math.sin(halfOrient);
     var co = Math.cos(halfOrient);
-    var qxo = qx * co + qz * so;
-    var qyo = qy * co - qw * so;
-    var qzo = qz * co + qx * so;
-    var qwo = qw * co - qy * so;
+    var q0x = 0;
+    var q0y = 0;
+    var q0z = so;
+    var q0w = co;
 
-    // Convert quaternion to Euler YXZ (yaw, pitch)
-    var test = 2 * (qyo * qwo - qxo * qzo);
+    var fqx = tqw * q0x + tqx * q0w + tqy * q0z - tqz * q0y;
+    var fqy = tqw * q0y - tqx * q0z + tqy * q0w + tqz * q0x;
+    var fqz = tqw * q0z + tqx * q0y - tqy * q0x + tqz * q0w;
+    var fqw = tqw * q0w - tqx * q0x - tqy * q0y - tqz * q0z;
+
+    // Quaternion to Euler (YXZ)
+    var test = 2 * (fqw * fqx - fqy * fqz);
     test = clamp(test, -1, 1);
-
     var pitch = Math.asin(test);
-    var yaw = Math.atan2(2 * (qxo * qwo + qyo * qzo), 1 - 2 * (qxo * qxo + qyo * qyo));
+    var yaw = Math.atan2(2 * (fqw * fqy + fqx * fqz), 1 - 2 * (fqx * fqx + fqy * fqy));
 
-    return { yaw: yaw, pitch: pitch };
+    // Invert yaw to match intuitive left/right movement.
+    return { yaw: -yaw, pitch: pitch };
   }
 
   function sanitize(s) {
