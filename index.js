@@ -188,9 +188,23 @@
   var gyroSmoothing = 0.15;
   var lastGyroYaw = null;
   var lastGyroPitch = null;
+  var lastRawYaw = null;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
+  }
+
+  function unwrapAngle(previous, current) {
+    if (previous === null) {
+      return current;
+    }
+    var delta = current - previous;
+    if (delta > Math.PI) {
+      current -= Math.PI * 2;
+    } else if (delta < -Math.PI) {
+      current += Math.PI * 2;
+    }
+    return current;
   }
 
   function getScreenOrientationAngle() {
@@ -269,8 +283,14 @@
       };
     }
 
-    var nextYaw = gyroInitial.viewYaw + (euler.yaw - gyroInitial.yaw);
-    var nextPitch = gyroInitial.viewPitch + (euler.pitch - gyroInitial.pitch);
+    var rawYaw = euler.yaw - gyroInitial.yaw;
+    var rawPitch = euler.pitch - gyroInitial.pitch;
+
+    rawYaw = unwrapAngle(lastRawYaw, rawYaw);
+    lastRawYaw = rawYaw;
+
+    var nextYaw = gyroInitial.viewYaw + rawYaw;
+    var nextPitch = gyroInitial.viewPitch - rawPitch;
 
     nextPitch = clamp(nextPitch, -Math.PI / 2, Math.PI / 2);
 
@@ -358,6 +378,7 @@
     gyroInitial = null;
     lastGyroYaw = null;
     lastGyroPitch = null;
+    lastRawYaw = null;
   }
 
   function updateSceneName(scene) {
