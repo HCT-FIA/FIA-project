@@ -23,6 +23,26 @@
   var ptzCloseBtnElement = document.querySelector('#ptzCloseBtn');
   var ptzOverlayElement = document.querySelector('#ptzOverlay');
 
+  // Login elements
+  var loginOverlayElement = document.querySelector('#loginOverlay');
+  var loginBtnElement = document.querySelector('#loginBtn');
+  var loginErrorElement = document.querySelector('#loginError');
+  var usernameElement = document.querySelector('#username');
+  var passwordElement = document.querySelector('#password');
+  var roleSelectElement = document.querySelector('#roleSelect');
+  var logoutBtnElement = document.querySelector('#logoutBtn');
+
+  var demoUsers = {
+    passenger: {
+      username: 'passenger',
+      password: 'passenger123'
+    },
+    admin: {
+      username: 'admin',
+      password: 'admin123'
+    }
+  };
+
   if (window.matchMedia) {
     var setMode = function() {
       if (mql.matches) {
@@ -181,7 +201,6 @@
   var ptzPanelOpen = false;
   var ptzZoomLevel = 1;
 
-  // PTZ sweep variables
   var ptzSweepInterval = null;
   var ptzSweepDirection = 1;
   var ptzSweepStep = 0.03;
@@ -209,6 +228,22 @@
       handlePtzPreset(button.getAttribute('data-ptz-preset'));
     });
   });
+
+  if (loginBtnElement) {
+    loginBtnElement.addEventListener('click', handleLogin);
+  }
+
+  if (logoutBtnElement) {
+    logoutBtnElement.addEventListener('click', handleLogout);
+  }
+
+  if (passwordElement) {
+    passwordElement.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        handleLogin();
+      }
+    });
+  }
 
   var ptzCameraConfig = {
     '0-entrance': {
@@ -247,6 +282,103 @@
   var lastGyroYaw = null;
   var lastGyroPitch = null;
   var lastRawYaw = null;
+
+  function lockApp() {
+    if (loginOverlayElement) {
+      loginOverlayElement.style.display = 'flex';
+    }
+    document.body.classList.add('app-locked');
+    closePtzPanel();
+  }
+
+  function unlockApp() {
+    if (loginOverlayElement) {
+      loginOverlayElement.style.display = 'none';
+    }
+    document.body.classList.remove('app-locked');
+  }
+
+  function handleLogin() {
+    var role = roleSelectElement ? roleSelectElement.value : '';
+    var username = usernameElement ? usernameElement.value.trim() : '';
+    var password = passwordElement ? passwordElement.value.trim() : '';
+
+    if (!demoUsers[role]) {
+      if (loginErrorElement) {
+        loginErrorElement.textContent = 'Invalid role selected.';
+      }
+      return;
+    }
+
+    if (
+      username === demoUsers[role].username &&
+      password === demoUsers[role].password
+    ) {
+      sessionStorage.setItem('fiaLoggedIn', 'true');
+      sessionStorage.setItem('fiaUserRole', role);
+      sessionStorage.setItem('fiaUsername', username);
+
+      unlockApp();
+
+      if (role === 'passenger') {
+        if (ptzCameraBtnElement) {
+          ptzCameraBtnElement.style.display = 'none';
+        }
+        closePtzPanel();
+      } else {
+        if (ptzCameraBtnElement) {
+          ptzCameraBtnElement.style.display = 'flex';
+        }
+      }
+
+      if (loginErrorElement) {
+        loginErrorElement.textContent = '';
+      }
+    } else {
+      if (loginErrorElement) {
+        loginErrorElement.textContent = 'Incorrect username or password.';
+      }
+    }
+  }
+
+  function handleLogout() {
+    sessionStorage.removeItem('fiaLoggedIn');
+    sessionStorage.removeItem('fiaUserRole');
+    sessionStorage.removeItem('fiaUsername');
+
+    if (usernameElement) usernameElement.value = '';
+    if (passwordElement) passwordElement.value = '';
+    if (loginErrorElement) loginErrorElement.textContent = '';
+
+    if (ptzCameraBtnElement) {
+      ptzCameraBtnElement.style.display = 'flex';
+    }
+
+    stopPtzSweep();
+    lockApp();
+  }
+
+  function checkLoginState() {
+    var isLoggedIn = sessionStorage.getItem('fiaLoggedIn');
+    var role = sessionStorage.getItem('fiaUserRole');
+
+    if (isLoggedIn === 'true') {
+      unlockApp();
+
+      if (role === 'passenger') {
+        if (ptzCameraBtnElement) {
+          ptzCameraBtnElement.style.display = 'none';
+        }
+        closePtzPanel();
+      } else {
+        if (ptzCameraBtnElement) {
+          ptzCameraBtnElement.style.display = 'flex';
+        }
+      }
+    } else {
+      lockApp();
+    }
+  }
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -464,7 +596,10 @@
   }
 
   function openPtzPanel() {
+    var role = sessionStorage.getItem('fiaUserRole');
+    if (role !== 'admin') return;
     if (!ptzCameraPanelElement || !ptzOverlayElement) return;
+
     ptzPanelOpen = true;
     ptzCameraPanelElement.classList.add('open');
     ptzOverlayElement.classList.add('visible');
@@ -475,6 +610,7 @@
 
   function closePtzPanel() {
     if (!ptzCameraPanelElement || !ptzOverlayElement) return;
+
     ptzPanelOpen = false;
     ptzCameraPanelElement.classList.remove('open');
     ptzOverlayElement.classList.remove('visible');
@@ -572,6 +708,8 @@
   }
 
   function handlePtzAction(action) {
+    var role = sessionStorage.getItem('fiaUserRole');
+    if (role !== 'admin') return;
     if (!currentScene) return;
 
     stopPtzSweep();
@@ -616,6 +754,8 @@
   }
 
   function handlePtzPreset(preset) {
+    var role = sessionStorage.getItem('fiaUserRole');
+    if (role !== 'admin') return;
     if (!currentScene) return;
 
     stopPtzSweep();
@@ -759,6 +899,7 @@
     return null;
   }
 
+  checkLoginState();
   switchScene(scenes[0]);
 
 })();
