@@ -20,7 +20,68 @@
     <span class="logo-text">Virtual Tour</span>
   </div>
   <div class="header-tagline">Your Gateway to the World</div>
+  <button id="ptzCameraBtn" type="button" aria-label="Open PTZ security camera panel">
+    <span class="camera-btn-icon">📹</span>
+    <span class="camera-btn-text">PTZ Camera</span>
+  </button>
 </div>
+
+<div id="ptzCameraPanel" class="ptz-panel" aria-hidden="true">
+  <div class="ptz-panel-header">
+    <div>
+      <div class="ptz-eyebrow">Security Monitoring</div>
+      <h2>PTZ Security Camera</h2>
+    </div>
+    <button id="ptzCloseBtn" class="ptz-close" type="button" aria-label="Close PTZ security camera panel">×</button>
+  </div>
+
+  <div class="ptz-live-card">
+    <div class="ptz-live-top">
+      <span class="ptz-live-dot"></span>
+      <span>Live Monitoring Simulation</span>
+    </div>
+    <div class="ptz-screen">
+      <div class="ptz-grid"></div>
+      <div class="ptz-reticle"></div>
+      <div class="ptz-corner ptz-corner-tl"></div>
+      <div class="ptz-corner ptz-corner-tr"></div>
+      <div class="ptz-corner ptz-corner-bl"></div>
+      <div class="ptz-corner ptz-corner-br"></div>
+      <div class="ptz-screen-label">Fujairah International Airport</div>
+      <div class="ptz-status-chip" id="ptzCameraStatus">ACTIVE</div>
+      <div class="ptz-camera-id" id="ptzCameraId">CAM-ENT-01</div>
+      <div class="ptz-location" id="ptzCameraLocation">Entrance Surveillance Zone</div>
+      <div class="ptz-meta">
+        <span id="ptzDirection">Direction: North Gate</span>
+        <span id="ptzZoom">Zoom: 1.0x</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ptz-scene-note" id="ptzSceneNote">Monitoring the current scene with pan, tilt, and zoom controls.</div>
+
+  <div class="ptz-controls-grid">
+    <button type="button" class="ptz-control" data-ptz-action="up">Tilt +</button>
+    <div class="ptz-row">
+      <button type="button" class="ptz-control" data-ptz-action="left">Pan ←</button>
+      <button type="button" class="ptz-control ptz-center" data-ptz-action="center">Center</button>
+      <button type="button" class="ptz-control" data-ptz-action="right">Pan →</button>
+    </div>
+    <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
+  </div>
+
+  <div class="ptz-zoom-row">
+    <button type="button" class="ptz-control" data-ptz-action="zoomIn">Zoom In</button>
+    <button type="button" class="ptz-control" data-ptz-action="zoomOut">Zoom Out</button>
+  </div>
+
+  <div class="ptz-presets">
+    <button type="button" class="ptz-preset" data-ptz-preset="wide">Wide View</button>
+    <button type="button" class="ptz-preset" data-ptz-preset="focus">Focus Gate</button>
+    <button type="button" class="ptz-preset" data-ptz-preset="secure">Security Sweep</button>
+  </div>
+</div>
+<div id="ptzOverlay" class="ptz-overlay" aria-hidden="true"></div>
 
 <div id="pano"></div>
 
