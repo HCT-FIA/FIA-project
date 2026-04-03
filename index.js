@@ -2,16 +2,9 @@
  * Copyright 2016 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 'use strict';
@@ -30,6 +23,10 @@
   var sceneListToggleElement = document.querySelector('#sceneListToggle');
   var autorotateToggleElement = document.querySelector('#autorotateToggle');
   var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
+  var ptzCameraBtnElement = document.querySelector('#ptzCameraBtn');
+  var ptzCameraPanelElement = document.querySelector('#ptzCameraPanel');
+  var ptzCloseBtnElement = document.querySelector('#ptzCloseBtn');
+  var ptzOverlayElement = document.querySelector('#ptzOverlay');
 
   // Detect desktop or mobile mode.
   if (window.matchMedia) {
@@ -73,15 +70,21 @@
   var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
   // Create scenes.
-  var scenes = data.scenes.map(function(data) {
+  var scenes = data.scenes.map(function(sceneData) {
     var urlPrefix = "tiles";
     var source = Marzipano.ImageUrlSource.fromString(
-      urlPrefix + "/" + data.id + "/{z}/{f}/{y}/{x}.jpg",
-      { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
-    var geometry = new Marzipano.CubeGeometry(data.levels);
+      urlPrefix + "/" + sceneData.id + "/{z}/{f}/{y}/{x}.jpg",
+      { cubeMapPreviewUrl: urlPrefix + "/" + sceneData.id + "/preview.jpg" }
+    );
+    var geometry = new Marzipano.CubeGeometry(sceneData.levels);
 
-    var limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 80*Math.PI/180, 140*Math.PI/180);
-    var view = new Marzipano.RectilinearView(data.initialViewParameters, limiter);
+    var limiter = Marzipano.RectilinearView.limit.traditional(
+      sceneData.faceSize,
+      80 * Math.PI / 180,
+      140 * Math.PI / 180
+    );
+
+    var view = new Marzipano.RectilinearView(sceneData.initialViewParameters, limiter);
 
     var scene = viewer.createScene({
       source: source,
@@ -91,19 +94,19 @@
     });
 
     // Create link hotspots.
-    data.linkHotspots.forEach(function(hotspot) {
+    sceneData.linkHotspots.forEach(function(hotspot) {
       var element = createLinkHotspotElement(hotspot);
       scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
     });
 
     // Create info hotspots.
-    data.infoHotspots.forEach(function(hotspot) {
+    sceneData.infoHotspots.forEach(function(hotspot) {
       var element = createInfoHotspotElement(hotspot);
       scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
     });
 
     return {
-      data: data,
+      data: sceneData,
       scene: scene,
       view: view
     };
@@ -113,8 +116,9 @@
   var autorotate = Marzipano.autorotate({
     yawSpeed: 0.03,
     targetPitch: 0,
-    targetFov: Math.PI/2
+    targetFov: Math.PI / 2
   });
+
   if (data.settings.autorotateEnabled) {
     autorotateToggleElement.classList.add('enabled');
   }
@@ -125,9 +129,11 @@
   // Set up fullscreen mode, if supported.
   if (screenfull.enabled && data.settings.fullscreenButton) {
     document.body.classList.add('fullscreen-enabled');
+
     fullscreenToggleElement.addEventListener('click', function() {
       screenfull.toggle();
     });
+
     screenfull.on('change', function() {
       if (screenfull.isFullscreen) {
         fullscreenToggleElement.classList.add('enabled');
@@ -152,7 +158,6 @@
     var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
     el.addEventListener('click', function() {
       switchScene(scene);
-      // On mobile, hide scene list after selecting a scene.
       if (document.body.classList.contains('mobile')) {
         hideSceneList();
       }
@@ -173,12 +178,12 @@
 
   // Associate view controls with elements.
   var controls = viewer.controls();
-  controls.registerMethod('upElement',    new Marzipano.ElementPressControlMethod(viewUpElement,     'y', -velocity, friction), true);
-  controls.registerMethod('downElement',  new Marzipano.ElementPressControlMethod(viewDownElement,   'y',  velocity, friction), true);
-  controls.registerMethod('leftElement',  new Marzipano.ElementPressControlMethod(viewLeftElement,   'x', -velocity, friction), true);
-  controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement,  'x',  velocity, friction), true);
-  controls.registerMethod('inElement',    new Marzipano.ElementPressControlMethod(viewInElement,  'zoom',  velocity, friction), true);
-  controls.registerMethod('outElement',   new Marzipano.ElementPressControlMethod(viewOutElement, 'zoom', -velocity, friction), true);
+  controls.registerMethod('upElement', new Marzipano.ElementPressControlMethod(viewUpElement, 'y', -velocity, friction), true);
+  controls.registerMethod('downElement', new Marzipano.ElementPressControlMethod(viewDownElement, 'y', velocity, friction), true);
+  controls.registerMethod('leftElement', new Marzipano.ElementPressControlMethod(viewLeftElement, 'x', -velocity, friction), true);
+  controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement, 'x', velocity, friction), true);
+  controls.registerMethod('inElement', new Marzipano.ElementPressControlMethod(viewInElement, 'zoom', velocity, friction), true);
+  controls.registerMethod('outElement', new Marzipano.ElementPressControlMethod(viewOutElement, 'zoom', -velocity, friction), true);
 
   // Gyroscope support (mobile).
   var gyroSupported = typeof window.DeviceOrientationEvent !== 'undefined';
@@ -186,6 +191,73 @@
   var gyroEnabled = false;
   var gyroInitial = null;
   var currentScene = null;
+
+  var ptzCameraLocationElement = document.querySelector('#ptzCameraLocation');
+  var ptzCameraIdElement = document.querySelector('#ptzCameraId');
+  var ptzCameraStatusElement = document.querySelector('#ptzCameraStatus');
+  var ptzDirectionElement = document.querySelector('#ptzDirection');
+  var ptzZoomElement = document.querySelector('#ptzZoom');
+  var ptzSceneNoteElement = document.querySelector('#ptzSceneNote');
+  var ptzControlElements = document.querySelectorAll('[data-ptz-action]');
+  var ptzPresetElements = document.querySelectorAll('[data-ptz-preset]');
+  var ptzPanelOpen = false;
+  var ptzZoomLevel = 1;
+
+  if (ptzCameraBtnElement) {
+    ptzCameraBtnElement.addEventListener('click', openPtzPanel);
+  }
+  if (ptzCloseBtnElement) {
+    ptzCloseBtnElement.addEventListener('click', closePtzPanel);
+  }
+  if (ptzOverlayElement) {
+    ptzOverlayElement.addEventListener('click', closePtzPanel);
+  }
+
+  Array.prototype.forEach.call(ptzControlElements, function(button) {
+    button.addEventListener('click', function() {
+      handlePtzAction(button.getAttribute('data-ptz-action'));
+    });
+  });
+
+  Array.prototype.forEach.call(ptzPresetElements, function(button) {
+    button.addEventListener('click', function() {
+      handlePtzPreset(button.getAttribute('data-ptz-preset'));
+    });
+  });
+
+  var ptzCameraConfig = {
+    '0-entrance': {
+      cameraId: 'CAM-ENT-01',
+      location: 'Entrance Surveillance Zone',
+      direction: 'North Gate',
+      note: 'Monitoring airport entrance access and visitor movement.'
+    },
+    '1-lobby': {
+      cameraId: 'CAM-LOB-02',
+      location: 'Lobby Monitoring Point',
+      direction: 'Reception Desk',
+      note: 'Monitoring lobby movement, reception, and waiting area activity.'
+    },
+    '2-ground-floor': {
+      cameraId: 'CAM-GRF-03',
+      location: 'Ground Floor Observation',
+      direction: 'Main Corridor',
+      note: 'Monitoring the main ground-floor corridor and passenger circulation.'
+    },
+    '3-wing-1': {
+      cameraId: 'CAM-WNG-04',
+      location: 'Wing 1 Security Zone',
+      direction: 'Restricted Passage',
+      note: 'Monitoring movement inside Wing 1 and adjacent access points.'
+    },
+    '4-ground-floor-2': {
+      cameraId: 'CAM-GR2-05',
+      location: 'Ground Floor Secondary Zone',
+      direction: 'Service Area',
+      note: 'Monitoring the secondary ground-floor area for safety and crowd visibility.'
+    }
+  };
+
   var gyroSmoothing = 0.15;
   var lastGyroYaw = null;
   var lastGyroPitch = null;
@@ -239,7 +311,9 @@
     if (!gyroSupported || gyroRequested) {
       return;
     }
+
     gyroRequested = true;
+
     if (typeof window.DeviceOrientationEvent !== 'undefined' &&
         typeof window.DeviceOrientationEvent.requestPermission === 'function') {
       window.DeviceOrientationEvent.requestPermission()
@@ -265,16 +339,16 @@
       return;
     }
 
-    // Use a proven DeviceOrientationControls-style conversion.
     var degToRad = Math.PI / 180;
-    var alpha = event.alpha * degToRad; // Z
-    var beta = event.beta * degToRad;   // X'
-    var gamma = event.gamma * degToRad; // Y''
+    var alpha = event.alpha * degToRad;
+    var beta = event.beta * degToRad;
+    var gamma = event.gamma * degToRad;
     var screenAngle = getScreenOrientationAngle() * degToRad;
 
     var euler = deviceOrientationToEuler(alpha, beta, gamma, screenAngle);
 
     var params = currentScene.view.parameters();
+
     if (!gyroInitial) {
       gyroInitial = {
         yaw: euler.yaw,
@@ -311,8 +385,6 @@
   }
 
   function deviceOrientationToEuler(alpha, beta, gamma, orient) {
-    // Based on THREE.DeviceOrientationControls math.
-    // Euler order YXZ: x = beta, y = alpha, z = -gamma
     var x = beta;
     var y = alpha;
     var z = -gamma;
@@ -324,26 +396,25 @@
     var s2 = Math.sin(y / 2);
     var s3 = Math.sin(z / 2);
 
-    // Quaternion from Euler (YXZ)
     var qx = s1 * c2 * c3 + c1 * s2 * s3;
     var qy = c1 * s2 * c3 - s1 * c2 * s3;
     var qz = c1 * c2 * s3 - s1 * s2 * c3;
     var qw = c1 * c2 * c3 + s1 * s2 * s3;
 
-    // Apply -PI/2 rotation around X (camera look direction alignment)
     var q1x = -Math.SQRT1_2;
     var q1y = 0;
     var q1z = 0;
     var q1w = Math.SQRT1_2;
+
     var tqx = qw * q1x + qx * q1w + qy * q1z - qz * q1y;
     var tqy = qw * q1y - qx * q1z + qy * q1w + qz * q1x;
     var tqz = qw * q1z + qx * q1y - qy * q1x + qz * q1w;
     var tqw = qw * q1w - qx * q1x - qy * q1y - qz * q1z;
 
-    // Apply screen orientation around Z
     var halfOrient = -orient / 2;
     var so = Math.sin(halfOrient);
     var co = Math.cos(halfOrient);
+
     var q0x = 0;
     var q0y = 0;
     var q0z = so;
@@ -354,13 +425,12 @@
     var fqz = tqw * q0z + tqx * q0y - tqy * q0x + tqz * q0w;
     var fqw = tqw * q0w - tqx * q0x - tqy * q0y - tqz * q0z;
 
-    // Quaternion to Euler (YXZ)
     var test = 2 * (fqw * fqx - fqy * fqz);
     test = clamp(test, -1, 1);
+
     var pitch = Math.asin(test);
     var yaw = Math.atan2(2 * (fqw * fqy + fqx * fqz), 1 - 2 * (fqx * fqx + fqy * fqy));
 
-    // Invert yaw to match intuitive left/right movement.
     return { yaw: -yaw, pitch: pitch };
   }
 
@@ -384,6 +454,7 @@
 
   function updateSceneName(scene) {
     sceneNameElement.innerHTML = sanitize(scene.data.name);
+    updatePtzPanel(scene);
   }
 
   function updateSceneList(scene) {
@@ -435,35 +506,164 @@
     }
   }
 
-  function createLinkHotspotElement(hotspot) {
+  function openPtzPanel() {
+    if (!ptzCameraPanelElement || !ptzOverlayElement) {
+      return;
+    }
+    ptzPanelOpen = true;
+    ptzCameraPanelElement.classList.add('open');
+    ptzOverlayElement.classList.add('visible');
+    ptzCameraPanelElement.setAttribute('aria-hidden', 'false');
+    ptzOverlayElement.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('ptz-open');
+  }
 
-    // Create wrapper element to hold icon and tooltip.
+  function closePtzPanel() {
+    if (!ptzCameraPanelElement || !ptzOverlayElement) {
+      return;
+    }
+    ptzPanelOpen = false;
+    ptzCameraPanelElement.classList.remove('open');
+    ptzOverlayElement.classList.remove('visible');
+    ptzCameraPanelElement.setAttribute('aria-hidden', 'true');
+    ptzOverlayElement.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('ptz-open');
+  }
+
+  function updatePtzPanel(scene) {
+    if (!scene || !ptzCameraLocationElement) {
+      return;
+    }
+
+    var config = ptzCameraConfig[scene.data.id] || {
+      cameraId: 'CAM-FIA-00',
+      location: scene.data.name + ' Monitoring Zone',
+      direction: 'General View',
+      note: 'Monitoring the active airport scene.'
+    };
+
+    ptzCameraLocationElement.textContent = config.location;
+    ptzCameraIdElement.textContent = config.cameraId;
+    ptzCameraStatusElement.textContent = 'ACTIVE';
+    ptzDirectionElement.textContent = 'Direction: ' + config.direction;
+    ptzSceneNoteElement.textContent = config.note;
+
+    var params = scene.view.parameters();
+    ptzZoomLevel = computeZoomMultiplier(params.fov);
+    ptzZoomElement.textContent = 'Zoom: ' + ptzZoomLevel.toFixed(1) + 'x';
+  }
+
+  function computeZoomMultiplier(fov) {
+    var baseFov = 1.55;
+    return Math.max(1, Math.min(4, baseFov / fov));
+  }
+
+  function applyPtzView(next) {
+    if (!currentScene) {
+      return;
+    }
+
+    var params = currentScene.view.parameters();
+
+    currentScene.view.setParameters({
+      yaw: next.yaw !== undefined ? next.yaw : params.yaw,
+      pitch: next.pitch !== undefined ? next.pitch : params.pitch,
+      fov: next.fov !== undefined ? next.fov : params.fov
+    });
+
+    ptzZoomLevel = computeZoomMultiplier(currentScene.view.parameters().fov);
+    ptzZoomElement.textContent = 'Zoom: ' + ptzZoomLevel.toFixed(1) + 'x';
+  }
+
+  function handlePtzAction(action) {
+    if (!currentScene) {
+      return;
+    }
+
+    stopAutorotate();
+
+    var params = currentScene.view.parameters();
+    var yawStep = 0.18;
+    var pitchStep = 0.12;
+    var fovStep = 0.14;
+
+    var next = {
+      yaw: params.yaw,
+      pitch: params.pitch,
+      fov: params.fov
+    };
+
+    if (action === 'left') {
+      next.yaw -= yawStep;
+    } else if (action === 'right') {
+      next.yaw += yawStep;
+    } else if (action === 'up') {
+      next.pitch -= pitchStep;
+    } else if (action === 'down') {
+      next.pitch += pitchStep;
+    } else if (action === 'zoomIn') {
+      next.fov = Math.max(0.7, params.fov - fovStep);
+    } else if (action === 'zoomOut') {
+      next.fov = Math.min(1.55, params.fov + fovStep);
+    } else if (action === 'center') {
+      next = {
+        yaw: currentScene.data.initialViewParameters.yaw,
+        pitch: currentScene.data.initialViewParameters.pitch,
+        fov: currentScene.data.initialViewParameters.fov
+      };
+    }
+
+    applyPtzView(next);
+  }
+
+  function handlePtzPreset(preset) {
+    if (!currentScene) {
+      return;
+    }
+
+    stopAutorotate();
+
+    var base = currentScene.data.initialViewParameters;
+    var next = {
+      yaw: base.yaw,
+      pitch: base.pitch,
+      fov: base.fov
+    };
+
+    if (preset === 'wide') {
+      next.fov = 1.55;
+    } else if (preset === 'focus') {
+      next.fov = 0.9;
+      next.pitch = Math.max(-1.2, base.pitch - 0.08);
+    } else if (preset === 'secure') {
+      next.yaw = base.yaw + 0.28;
+      next.fov = 1.05;
+    }
+
+    applyPtzView(next);
+  }
+
+  function createLinkHotspotElement(hotspot) {
     var wrapper = document.createElement('div');
     wrapper.classList.add('hotspot');
     wrapper.classList.add('link-hotspot');
 
-    // Create image element.
     var icon = document.createElement('img');
     icon.src = 'img/link.png';
     icon.classList.add('link-hotspot-icon');
 
-    // Set rotation transform.
     var transformProperties = [ '-ms-transform', '-webkit-transform', 'transform' ];
     for (var i = 0; i < transformProperties.length; i++) {
       var property = transformProperties[i];
       icon.style[property] = 'rotate(' + hotspot.rotation + 'rad)';
     }
 
-    // Add click event handler.
     wrapper.addEventListener('click', function() {
       switchScene(findSceneById(hotspot.target));
     });
 
-    // Prevent touch and scroll events from reaching the parent element.
-    // This prevents the view control logic from interfering with the hotspot.
     stopTouchAndScrollEventPropagation(wrapper);
 
-    // Create tooltip element.
     var tooltip = document.createElement('div');
     tooltip.classList.add('hotspot-tooltip');
     tooltip.classList.add('link-hotspot-tooltip');
@@ -476,55 +676,48 @@
   }
 
   function createInfoHotspotElement(hotspot) {
-
-    // Create wrapper element to hold icon and tooltip.
     var wrapper = document.createElement('div');
     wrapper.classList.add('hotspot');
     wrapper.classList.add('info-hotspot');
 
-    // Create hotspot/tooltip header.
     var header = document.createElement('div');
     header.classList.add('info-hotspot-header');
 
-    // Create image element.
     var iconWrapper = document.createElement('div');
     iconWrapper.classList.add('info-hotspot-icon-wrapper');
+
     var icon = document.createElement('img');
     icon.src = 'img/info.png';
     icon.classList.add('info-hotspot-icon');
     iconWrapper.appendChild(icon);
 
-    // Create title element.
     var titleWrapper = document.createElement('div');
     titleWrapper.classList.add('info-hotspot-title-wrapper');
+
     var title = document.createElement('div');
     title.classList.add('info-hotspot-title');
     title.innerHTML = hotspot.title;
     titleWrapper.appendChild(title);
 
-    // Create close element.
     var closeWrapper = document.createElement('div');
     closeWrapper.classList.add('info-hotspot-close-wrapper');
+
     var closeIcon = document.createElement('img');
     closeIcon.src = 'img/close.png';
     closeIcon.classList.add('info-hotspot-close-icon');
     closeWrapper.appendChild(closeIcon);
 
-    // Construct header element.
     header.appendChild(iconWrapper);
     header.appendChild(titleWrapper);
     header.appendChild(closeWrapper);
 
-    // Create text element.
     var text = document.createElement('div');
     text.classList.add('info-hotspot-text');
     text.innerHTML = hotspot.text;
 
-    // Place header and text into wrapper element.
     wrapper.appendChild(header);
     wrapper.appendChild(text);
 
-    // Create a modal for the hotspot content to appear on mobile mode.
     var modal = document.createElement('div');
     modal.innerHTML = wrapper.innerHTML;
     modal.classList.add('info-hotspot-modal');
@@ -535,23 +728,16 @@
       modal.classList.toggle('visible');
     };
 
-    // Show content when hotspot is clicked.
     wrapper.querySelector('.info-hotspot-header').addEventListener('click', toggle);
-
-    // Hide content when close icon is clicked.
     modal.querySelector('.info-hotspot-close-wrapper').addEventListener('click', toggle);
 
-    // Prevent touch and scroll events from reaching the parent element.
-    // This prevents the view control logic from interfering with the hotspot.
     stopTouchAndScrollEventPropagation(wrapper);
 
     return wrapper;
   }
 
-  // Prevent touch and scroll events from reaching the parent element.
-  function stopTouchAndScrollEventPropagation(element, eventList) {
-    var eventList = [ 'touchstart', 'touchmove', 'touchend', 'touchcancel',
-                      'wheel', 'mousewheel' ];
+  function stopTouchAndScrollEventPropagation(element) {
+    var eventList = [ 'touchstart', 'touchmove', 'touchend', 'touchcancel', 'wheel', 'mousewheel' ];
     for (var i = 0; i < eventList.length; i++) {
       element.addEventListener(eventList[i], function(event) {
         event.stopPropagation();
