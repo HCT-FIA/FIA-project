@@ -1,10 +1,6 @@
 /*
  * Copyright 2016 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0
  */
 
 'use strict';
@@ -15,7 +11,6 @@
   var screenfull = window.screenfull;
   var data = window.APP_DATA;
 
-  // Grab elements from DOM.
   var panoElement = document.querySelector('#pano');
   var sceneNameElement = document.querySelector('#titleBar .sceneName');
   var sceneListElement = document.querySelector('#sceneList');
@@ -28,7 +23,6 @@
   var ptzCloseBtnElement = document.querySelector('#ptzCloseBtn');
   var ptzOverlayElement = document.querySelector('#ptzOverlay');
 
-  // Detect desktop or mobile mode.
   if (window.matchMedia) {
     var setMode = function() {
       if (mql.matches) {
@@ -46,7 +40,6 @@
     document.body.classList.add('desktop');
   }
 
-  // Detect whether we are on a touch device.
   document.body.classList.add('no-touch');
   window.addEventListener('touchstart', function() {
     document.body.classList.remove('no-touch');
@@ -54,28 +47,25 @@
     requestGyroPermission();
   }, { passive: true });
 
-  // Use tooltip fallback mode on IE < 11.
   if (bowser.msie && parseFloat(bowser.version) < 11) {
     document.body.classList.add('tooltip-fallback');
   }
 
-  // Viewer options.
   var viewerOpts = {
     controls: {
       mouseViewMode: data.settings.mouseViewMode
     }
   };
 
-  // Initialize viewer.
   var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
-  // Create scenes.
   var scenes = data.scenes.map(function(sceneData) {
     var urlPrefix = "tiles";
     var source = Marzipano.ImageUrlSource.fromString(
       urlPrefix + "/" + sceneData.id + "/{z}/{f}/{y}/{x}.jpg",
       { cubeMapPreviewUrl: urlPrefix + "/" + sceneData.id + "/preview.jpg" }
     );
+
     var geometry = new Marzipano.CubeGeometry(sceneData.levels);
 
     var limiter = Marzipano.RectilinearView.limit.traditional(
@@ -93,13 +83,11 @@
       pinFirstLevel: true
     });
 
-    // Create link hotspots.
     sceneData.linkHotspots.forEach(function(hotspot) {
       var element = createLinkHotspotElement(hotspot);
       scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
     });
 
-    // Create info hotspots.
     sceneData.infoHotspots.forEach(function(hotspot) {
       var element = createInfoHotspotElement(hotspot);
       scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
@@ -112,7 +100,6 @@
     };
   });
 
-  // Set up autorotate, if enabled.
   var autorotate = Marzipano.autorotate({
     yawSpeed: 0.03,
     targetPitch: 0,
@@ -123,10 +110,8 @@
     autorotateToggleElement.classList.add('enabled');
   }
 
-  // Set handler for autorotate toggle.
   autorotateToggleElement.addEventListener('click', toggleAutorotate);
 
-  // Set up fullscreen mode, if supported.
   if (screenfull.enabled && data.settings.fullscreenButton) {
     document.body.classList.add('fullscreen-enabled');
 
@@ -145,15 +130,12 @@
     document.body.classList.add('fullscreen-disabled');
   }
 
-  // Set handler for scene list toggle.
   sceneListToggleElement.addEventListener('click', toggleSceneList);
 
-  // Start with the scene list open on desktop.
   if (!document.body.classList.contains('mobile')) {
     showSceneList();
   }
 
-  // Set handler for scene switch.
   scenes.forEach(function(scene) {
     var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
     el.addEventListener('click', function() {
@@ -164,7 +146,6 @@
     });
   });
 
-  // DOM elements for view controls.
   var viewUpElement = document.querySelector('#viewUp');
   var viewDownElement = document.querySelector('#viewDown');
   var viewLeftElement = document.querySelector('#viewLeft');
@@ -172,11 +153,9 @@
   var viewInElement = document.querySelector('#viewIn');
   var viewOutElement = document.querySelector('#viewOut');
 
-  // Dynamic parameters for controls.
   var velocity = 0.7;
   var friction = 3;
 
-  // Associate view controls with elements.
   var controls = viewer.controls();
   controls.registerMethod('upElement', new Marzipano.ElementPressControlMethod(viewUpElement, 'y', -velocity, friction), true);
   controls.registerMethod('downElement', new Marzipano.ElementPressControlMethod(viewDownElement, 'y', velocity, friction), true);
@@ -185,7 +164,6 @@
   controls.registerMethod('inElement', new Marzipano.ElementPressControlMethod(viewInElement, 'zoom', velocity, friction), true);
   controls.registerMethod('outElement', new Marzipano.ElementPressControlMethod(viewOutElement, 'zoom', -velocity, friction), true);
 
-  // Gyroscope support (mobile).
   var gyroSupported = typeof window.DeviceOrientationEvent !== 'undefined';
   var gyroRequested = false;
   var gyroEnabled = false;
@@ -202,6 +180,13 @@
   var ptzPresetElements = document.querySelectorAll('[data-ptz-preset]');
   var ptzPanelOpen = false;
   var ptzZoomLevel = 1;
+
+  // PTZ sweep variables
+  var ptzSweepInterval = null;
+  var ptzSweepDirection = 1;
+  var ptzSweepStep = 0.03;
+  var ptzSweepRange = 0.45;
+  var ptzSweepCenterYaw = null;
 
   if (ptzCameraBtnElement) {
     ptzCameraBtnElement.addEventListener('click', openPtzPanel);
@@ -291,36 +276,27 @@
   }
 
   function enableGyro() {
-    if (!gyroSupported || gyroEnabled) {
-      return;
-    }
+    if (!gyroSupported || gyroEnabled) return;
     window.addEventListener('deviceorientation', handleDeviceOrientation, true);
     gyroEnabled = true;
   }
 
   function disableGyro() {
-    if (!gyroEnabled) {
-      return;
-    }
+    if (!gyroEnabled) return;
     window.removeEventListener('deviceorientation', handleDeviceOrientation, true);
     gyroEnabled = false;
     gyroInitial = null;
   }
 
   function requestGyroPermission() {
-    if (!gyroSupported || gyroRequested) {
-      return;
-    }
-
+    if (!gyroSupported || gyroRequested) return;
     gyroRequested = true;
 
     if (typeof window.DeviceOrientationEvent !== 'undefined' &&
         typeof window.DeviceOrientationEvent.requestPermission === 'function') {
       window.DeviceOrientationEvent.requestPermission()
         .then(function(state) {
-          if (state === 'granted') {
-            enableGyro();
-          }
+          if (state === 'granted') enableGyro();
         })
         .catch(function() {
           disableGyro();
@@ -331,13 +307,8 @@
   }
 
   function handleDeviceOrientation(event) {
-    if (!gyroEnabled || !currentScene) {
-      return;
-    }
-
-    if (event.alpha === null || event.beta === null || event.gamma === null) {
-      return;
-    }
+    if (!gyroEnabled || !currentScene) return;
+    if (event.alpha === null || event.beta === null || event.gamma === null) return;
 
     var degToRad = Math.PI / 180;
     var alpha = event.alpha * degToRad;
@@ -346,7 +317,6 @@
     var screenAngle = getScreenOrientationAngle() * degToRad;
 
     var euler = deviceOrientationToEuler(alpha, beta, gamma, screenAngle);
-
     var params = currentScene.view.parameters();
 
     if (!gyroInitial) {
@@ -366,7 +336,6 @@
 
     var nextYaw = gyroInitial.viewYaw + rawYaw;
     var nextPitch = gyroInitial.viewPitch - rawPitch;
-
     nextPitch = clamp(nextPitch, -Math.PI / 2, Math.PI / 2);
 
     if (lastGyroYaw === null) {
@@ -389,22 +358,15 @@
     var y = alpha;
     var z = -gamma;
 
-    var c1 = Math.cos(x / 2);
-    var c2 = Math.cos(y / 2);
-    var c3 = Math.cos(z / 2);
-    var s1 = Math.sin(x / 2);
-    var s2 = Math.sin(y / 2);
-    var s3 = Math.sin(z / 2);
+    var c1 = Math.cos(x / 2), c2 = Math.cos(y / 2), c3 = Math.cos(z / 2);
+    var s1 = Math.sin(x / 2), s2 = Math.sin(y / 2), s3 = Math.sin(z / 2);
 
     var qx = s1 * c2 * c3 + c1 * s2 * s3;
     var qy = c1 * s2 * c3 - s1 * c2 * s3;
     var qz = c1 * c2 * s3 - s1 * s2 * c3;
     var qw = c1 * c2 * c3 + s1 * s2 * s3;
 
-    var q1x = -Math.SQRT1_2;
-    var q1y = 0;
-    var q1z = 0;
-    var q1w = Math.SQRT1_2;
+    var q1x = -Math.SQRT1_2, q1y = 0, q1z = 0, q1w = Math.SQRT1_2;
 
     var tqx = qw * q1x + qx * q1w + qy * q1z - qz * q1y;
     var tqy = qw * q1y - qx * q1z + qy * q1w + qz * q1x;
@@ -412,13 +374,9 @@
     var tqw = qw * q1w - qx * q1x - qy * q1y - qz * q1z;
 
     var halfOrient = -orient / 2;
-    var so = Math.sin(halfOrient);
-    var co = Math.cos(halfOrient);
+    var so = Math.sin(halfOrient), co = Math.cos(halfOrient);
 
-    var q0x = 0;
-    var q0y = 0;
-    var q0z = so;
-    var q0w = co;
+    var q0x = 0, q0y = 0, q0z = so, q0w = co;
 
     var fqx = tqw * q0x + tqx * q0w + tqy * q0z - tqz * q0y;
     var fqy = tqw * q0y - tqx * q0z + tqy * q0w + tqz * q0x;
@@ -440,6 +398,7 @@
 
   function switchScene(scene) {
     stopAutorotate();
+    stopPtzSweep();
     scene.view.setParameters(scene.data.initialViewParameters);
     scene.scene.switchTo();
     startAutorotate();
@@ -484,9 +443,7 @@
   }
 
   function startAutorotate() {
-    if (!autorotateToggleElement.classList.contains('enabled')) {
-      return;
-    }
+    if (!autorotateToggleElement.classList.contains('enabled')) return;
     viewer.startMovement(autorotate);
     viewer.setIdleMovement(3000, autorotate);
   }
@@ -507,9 +464,7 @@
   }
 
   function openPtzPanel() {
-    if (!ptzCameraPanelElement || !ptzOverlayElement) {
-      return;
-    }
+    if (!ptzCameraPanelElement || !ptzOverlayElement) return;
     ptzPanelOpen = true;
     ptzCameraPanelElement.classList.add('open');
     ptzOverlayElement.classList.add('visible');
@@ -519,9 +474,7 @@
   }
 
   function closePtzPanel() {
-    if (!ptzCameraPanelElement || !ptzOverlayElement) {
-      return;
-    }
+    if (!ptzCameraPanelElement || !ptzOverlayElement) return;
     ptzPanelOpen = false;
     ptzCameraPanelElement.classList.remove('open');
     ptzOverlayElement.classList.remove('visible');
@@ -531,9 +484,7 @@
   }
 
   function updatePtzPanel(scene) {
-    if (!scene || !ptzCameraLocationElement) {
-      return;
-    }
+    if (!scene || !ptzCameraLocationElement) return;
 
     var config = ptzCameraConfig[scene.data.id] || {
       cameraId: 'CAM-FIA-00',
@@ -559,9 +510,7 @@
   }
 
   function applyPtzView(next) {
-    if (!currentScene) {
-      return;
-    }
+    if (!currentScene) return;
 
     var params = currentScene.view.parameters();
 
@@ -575,11 +524,57 @@
     ptzZoomElement.textContent = 'Zoom: ' + ptzZoomLevel.toFixed(1) + 'x';
   }
 
-  function handlePtzAction(action) {
-    if (!currentScene) {
-      return;
+  function stopPtzSweep() {
+    if (ptzSweepInterval) {
+      clearInterval(ptzSweepInterval);
+      ptzSweepInterval = null;
+    }
+    if (ptzCameraStatusElement) {
+      ptzCameraStatusElement.textContent = 'ACTIVE';
+    }
+  }
+
+  function startPtzSweep() {
+    if (!currentScene) return;
+
+    stopPtzSweep();
+    stopAutorotate();
+
+    var params = currentScene.view.parameters();
+    ptzSweepCenterYaw = params.yaw;
+    ptzSweepDirection = 1;
+
+    if (ptzCameraStatusElement) {
+      ptzCameraStatusElement.textContent = 'SWEEP';
+    }
+    if (ptzSceneNoteElement) {
+      ptzSceneNoteElement.textContent = 'Automatic security sweep is active for this camera.';
     }
 
+    ptzSweepInterval = setInterval(function() {
+      if (!currentScene) return;
+
+      var currentParams = currentScene.view.parameters();
+      var nextYaw = currentParams.yaw + (ptzSweepStep * ptzSweepDirection);
+
+      if (nextYaw > ptzSweepCenterYaw + ptzSweepRange) {
+        ptzSweepDirection = -1;
+      } else if (nextYaw < ptzSweepCenterYaw - ptzSweepRange) {
+        ptzSweepDirection = 1;
+      }
+
+      currentScene.view.setParameters({
+        yaw: currentParams.yaw + (ptzSweepStep * ptzSweepDirection),
+        pitch: currentParams.pitch,
+        fov: currentParams.fov
+      });
+    }, 60);
+  }
+
+  function handlePtzAction(action) {
+    if (!currentScene) return;
+
+    stopPtzSweep();
     stopAutorotate();
 
     var params = currentScene.view.parameters();
@@ -613,14 +608,17 @@
       };
     }
 
+    if (ptzSceneNoteElement) {
+      ptzSceneNoteElement.textContent = 'Manual PTZ control is active.';
+    }
+
     applyPtzView(next);
   }
 
   function handlePtzPreset(preset) {
-    if (!currentScene) {
-      return;
-    }
+    if (!currentScene) return;
 
+    stopPtzSweep();
     stopAutorotate();
 
     var base = currentScene.data.initialViewParameters;
@@ -632,12 +630,14 @@
 
     if (preset === 'wide') {
       next.fov = 1.55;
+      if (ptzSceneNoteElement) ptzSceneNoteElement.textContent = 'Wide surveillance view selected.';
     } else if (preset === 'focus') {
       next.fov = 0.9;
       next.pitch = Math.max(-1.2, base.pitch - 0.08);
+      if (ptzSceneNoteElement) ptzSceneNoteElement.textContent = 'Focused monitoring view selected.';
     } else if (preset === 'secure') {
-      next.yaw = base.yaw + 0.28;
-      next.fov = 1.05;
+      startPtzSweep();
+      return;
     }
 
     applyPtzView(next);
@@ -747,23 +747,18 @@
 
   function findSceneById(id) {
     for (var i = 0; i < scenes.length; i++) {
-      if (scenes[i].data.id === id) {
-        return scenes[i];
-      }
+      if (scenes[i].data.id === id) return scenes[i];
     }
     return null;
   }
 
   function findSceneDataById(id) {
     for (var i = 0; i < data.scenes.length; i++) {
-      if (data.scenes[i].id === id) {
-        return data.scenes[i];
-      }
+      if (data.scenes[i].id === id) return data.scenes[i];
     }
     return null;
   }
 
-  // Display the initial scene.
   switchScene(scenes[0]);
 
 })();
