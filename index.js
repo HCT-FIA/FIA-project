@@ -16,17 +16,6 @@
 
 'use strict';
 
-
-function openCamera() {
-  document.getElementById("cameraFrame").src = "YOUR_LIVE_CAMERA_LINK";
-  document.getElementById("cameraModal").style.display = "flex";
-}
-
-function closeCamera() {
-  document.getElementById("cameraFrame").src = "";
-  document.getElementById("cameraModal").style.display = "none";
-}
-
 (function() {
   var Marzipano = window.Marzipano;
   var bowser = window.bowser;
