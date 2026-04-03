@@ -13,7 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 'use strict';
+
+
+function openCamera() {
+  document.getElementById("cameraFrame").src = "YOUR_LIVE_CAMERA_LINK";
+  document.getElementById("cameraModal").style.display = "flex";
+}
+
+function closeCamera() {
+  document.getElementById("cameraFrame").src = "";
+  document.getElementById("cameraModal").style.display = "none";
+}
 
 (function() {
   var Marzipano = window.Marzipano;
