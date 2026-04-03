@@ -31,6 +31,7 @@
   box-shadow:0 8px 18px rgba(0,0,0,0.15);
 }
 #securityCameraBtn:hover { transform:translateY(-1px); }
+
 .security-panel {
   position:fixed;
   top:90px;
@@ -48,6 +49,7 @@
   font-family:'Poppins', sans-serif;
 }
 .security-panel.hidden { display:none; }
+
 .security-panel-header {
   display:flex;
   justify-content:space-between;
@@ -75,6 +77,7 @@
   cursor:pointer;
   font-size:18px;
 }
+
 .security-status-row {
   display:flex;
   flex-wrap:wrap;
@@ -92,6 +95,7 @@
   background:rgba(220,38,38,0.18);
   color:#fecaca;
 }
+
 .camera-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -105,30 +109,34 @@
   cursor:pointer;
   transition:0.2s ease;
 }
-.camera-card:hover, .camera-card.active {
+.camera-card:hover,
+.camera-card.active {
   border-color:#60a5fa;
   transform:translateY(-1px);
 }
+
 .camera-label {
   font-size:12px;
   font-weight:600;
   margin-bottom:8px;
   color:#e5e7eb;
 }
+
 .camera-feed {
   position:relative;
   height:120px;
   border-radius:12px;
   overflow:hidden;
-  background:linear-gradient(135deg, #334155, #0f172a);
+  background:#0f172a;
 }
-.camera-feed::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 2px, transparent 2px, transparent 6px);
-  animation:scan 7s linear infinite;
+
+.camera-feed img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
+
 .camera-feed::after {
   content:'';
   position:absolute;
@@ -138,11 +146,9 @@
   height:100%;
   background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   animation:sweep 4s linear infinite;
+  pointer-events:none;
 }
-.camera-feed-1 { background:linear-gradient(135deg, #1e293b, #334155 45%, #0f172a); }
-.camera-feed-2 { background:linear-gradient(135deg, #0f172a, #1d4ed8 50%, #020617); }
-.camera-feed-3 { background:linear-gradient(135deg, #111827, #475569 50%, #1f2937); }
-.camera-feed-4 { background:linear-gradient(135deg, #1f2937, #0f766e 50%, #111827); }
+
 .feed-overlay {
   position:absolute;
   top:8px;
@@ -155,6 +161,7 @@
   border-radius:999px;
   padding:4px 8px;
 }
+
 .security-info-box {
   margin-top:14px;
   background:rgba(255,255,255,0.06);
@@ -164,15 +171,17 @@
   font-size:13px;
   line-height:1.5;
 }
-.security-info-box strong { display:block; margin-bottom:6px; color:#fff; }
-@keyframes scan {
-  0% { transform:translateY(-100%); }
-  100% { transform:translateY(100%); }
+.security-info-box strong {
+  display:block;
+  margin-bottom:6px;
+  color:#fff;
 }
+
 @keyframes sweep {
   0% { left:-40%; }
   100% { left:120%; }
 }
+
 @media (max-width: 700px) {
   #headerBar { flex-wrap:wrap; }
   .camera-grid { grid-template-columns:1fr; }
@@ -211,33 +220,40 @@
   <div class="camera-grid">
     <div class="camera-card active" data-camera="Entrance Gate">
       <div class="camera-label">Camera 01 - Entrance Gate</div>
-      <div class="camera-feed camera-feed-1">
+      <div class="camera-feed">
         <span class="feed-overlay">LIVE</span>
+        <img src="img/cam1.jpg" alt="Entrance Gate Camera">
       </div>
     </div>
+
     <div class="camera-card" data-camera="Check-In Hall">
       <div class="camera-label">Camera 02 - Check-In Hall</div>
-      <div class="camera-feed camera-feed-2">
+      <div class="camera-feed">
         <span class="feed-overlay">LIVE</span>
+        <img src="img/cam2.jpg" alt="Check-In Hall Camera">
       </div>
     </div>
+
     <div class="camera-card" data-camera="Reception Area">
       <div class="camera-label">Camera 03 - Reception Area</div>
-      <div class="camera-feed camera-feed-3">
+      <div class="camera-feed">
         <span class="feed-overlay">LIVE</span>
+        <img src="img/cam3.jpg" alt="Reception Area Camera">
       </div>
     </div>
+
     <div class="camera-card" data-camera="Restaurant Zone">
       <div class="camera-label">Camera 04 - Restaurant Zone</div>
-      <div class="camera-feed camera-feed-4">
+      <div class="camera-feed">
         <span class="feed-overlay">LIVE</span>
+        <img src="img/cam4.jpg" alt="Restaurant Zone Camera">
       </div>
     </div>
   </div>
 
   <div class="security-info-box">
     <strong id="selectedCameraText">Selected Camera: Entrance Gate</strong>
-    <p>This is a demo monitoring module to represent airport security surveillance inside the digital twin interface.</p>
+    <p>This is a demo monitoring module using static airport images to represent security surveillance inside the digital twin interface.</p>
   </div>
 </div>
 
@@ -331,12 +347,14 @@
       panel.setAttribute('aria-hidden', 'false');
     });
   }
+
   if (closeBtn && panel) {
     closeBtn.addEventListener('click', function() {
       panel.classList.add('hidden');
       panel.setAttribute('aria-hidden', 'true');
     });
   }
+
   cards.forEach(function(card) {
     card.addEventListener('click', function() {
       cards.forEach(function(c) { c.classList.remove('active'); });
