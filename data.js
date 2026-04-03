@@ -46,14 +46,14 @@ var APP_DATA = {
         {
           "yaw": 1.8459450985276966,
           "pitch": -0.04713196424395427,
-          "title": "Student services center",
-          "text": "This is the student services center"
+          "title": "Passenger Information Desk",
+          "text": "This is the passenger information desk."
         },
         {
           "yaw": 2.4250945392970937,
           "pitch": -0.27154241984186456,
-          "title": "Student services Center",
-          "text": "Timings - 8:00 AM - 3:00 Pm"
+          "title": "Passenger Assistance Counter",
+          "text": "Passenger assistance services are available during airport operating hours."
         }
       ]
     },
@@ -109,14 +109,14 @@ var APP_DATA = {
         {
           "yaw": 2.1831152873499127,
           "pitch": -0.05190466360648749,
-          "title": "Meeting room A",
-          "text": "This is Meeting room A"
+          "title": "Airport Operations Office",
+          "text": "This is Airport Operations Office"
         },
         {
           "yaw": -1.5056005265208618,
           "pitch": -0.0954311072574825,
-          "title": "Onewish Cafe",
-          "text": "This is Onewish Cafe"
+          "title": "Airport Cafe",
+          "text": "This is Airport Cafe"
         }
       ]
     },
@@ -178,8 +178,8 @@ var APP_DATA = {
         {
           "yaw": 1.8010855444707277,
           "pitch": -0.05586370046413336,
-          "title": "Exhibit C",
-          "text": "This is Exhibit C"
+          "title": "Information Display",
+          "text": "This is Information Display"
         }
       ]
     },
@@ -223,20 +223,20 @@ var APP_DATA = {
         {
           "yaw": 2.249521303826951,
           "pitch": -0.2883709403142056,
-          "title": "Ladies Washroom",
+          "title": "Ladies Restroom",
           "text": "This is the ladies washroom"
         },
         {
           "yaw": 2.7388786483134027,
           "pitch": -0.1631162095610268,
-          "title": "Gent's washroom",
-          "text": "This is the gent's washroom"
+          "title": "Men's Restroom",
+          "text": "This is the men's restroom."
         },
         {
           "yaw": -2.9332991570449245,
           "pitch": -0.10169974614950839,
-          "title": "Classroom A001",
-          "text": "This is classroom A001"
+          "title": "Security Office",
+          "text": "This is the airport security office."
         }
       ]
     },
@@ -280,25 +280,25 @@ var APP_DATA = {
         {
           "yaw": -1.62446364442855,
           "pitch": -0.0436633839502214,
-          "title": "Sports hall",
-          "text": "This is the sports hall"
+          "title": "Check-in Support Area",
+          "text": "This is the check-in support area."
         },
         {
           "yaw": 2.7761349205336394,
           "pitch": -0.006930788262168974,
-          "title": "Exhibit A",
-          "text": "This is Exhibit A"
+          "title": "Departure Information Board",
+          "text": "This is Departure Information Board"
         },
         {
           "yaw": 2.1178489057208214,
           "pitch": -0.018247308701312193,
-          "title": "Exhibit B",
-          "text": "This is Exhibit B"
+          "title": "Arrival Information Board",
+          "text": "This is Arrival Information Board"
         }
       ]
     }
   ],
-  "name": "HCT- FIA navigation project demo",
+  "name": "Fujairah International Airport Virtual Tour Demo",
   "settings": {
     "mouseViewMode": "drag",
     "autorotateEnabled": false,
