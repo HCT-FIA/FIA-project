@@ -23,26 +23,6 @@
   var ptzCloseBtnElement = document.querySelector('#ptzCloseBtn');
   var ptzOverlayElement = document.querySelector('#ptzOverlay');
 
-  // Login elements
-  var loginOverlayElement = document.querySelector('#loginOverlay');
-  var loginBtnElement = document.querySelector('#loginBtn');
-  var loginErrorElement = document.querySelector('#loginError');
-  var usernameElement = document.querySelector('#username');
-  var passwordElement = document.querySelector('#password');
-  var roleSelectElement = document.querySelector('#roleSelect');
-  var logoutBtnElement = document.querySelector('#logoutBtn');
-
-  var demoUsers = {
-    passenger: {
-      username: 'passenger',
-      password: 'passenger123'
-    },
-    admin: {
-      username: 'admin',
-      password: 'admin123'
-    }
-  };
-
   if (window.matchMedia) {
     var setMode = function() {
       if (mql.matches) {
@@ -200,7 +180,14 @@
   var ptzPresetElements = document.querySelectorAll('[data-ptz-preset]');
   var ptzPanelOpen = false;
   var ptzZoomLevel = 1;
+  var aiAnalyzeBtnElement = document.querySelector('#aiAnalyzeBtn');
+  var aiAreaTypeElement = document.querySelector('#aiAreaType');
+  var aiCrowdLevelElement = document.querySelector('#aiCrowdLevel');
+  var aiSecurityStatusElement = document.querySelector('#aiSecurityStatus');
+  var aiDetectedObjectsElement = document.querySelector('#aiDetectedObjects');
+  var aiRecommendationElement = document.querySelector('#aiRecommendation');
 
+  // PTZ sweep variables
   var ptzSweepInterval = null;
   var ptzSweepDirection = 1;
   var ptzSweepStep = 0.03;
@@ -229,20 +216,8 @@
     });
   });
 
-  if (loginBtnElement) {
-    loginBtnElement.addEventListener('click', handleLogin);
-  }
-
-  if (logoutBtnElement) {
-    logoutBtnElement.addEventListener('click', handleLogout);
-  }
-
-  if (passwordElement) {
-    passwordElement.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        handleLogin();
-      }
-    });
+  if (aiAnalyzeBtnElement) {
+    aiAnalyzeBtnElement.addEventListener('click', runAiSceneAnalysis);
   }
 
   var ptzCameraConfig = {
@@ -282,103 +257,6 @@
   var lastGyroYaw = null;
   var lastGyroPitch = null;
   var lastRawYaw = null;
-
-  function lockApp() {
-    if (loginOverlayElement) {
-      loginOverlayElement.style.display = 'flex';
-    }
-    document.body.classList.add('app-locked');
-    closePtzPanel();
-  }
-
-  function unlockApp() {
-    if (loginOverlayElement) {
-      loginOverlayElement.style.display = 'none';
-    }
-    document.body.classList.remove('app-locked');
-  }
-
-  function handleLogin() {
-    var role = roleSelectElement ? roleSelectElement.value : '';
-    var username = usernameElement ? usernameElement.value.trim() : '';
-    var password = passwordElement ? passwordElement.value.trim() : '';
-
-    if (!demoUsers[role]) {
-      if (loginErrorElement) {
-        loginErrorElement.textContent = 'Invalid role selected.';
-      }
-      return;
-    }
-
-    if (
-      username === demoUsers[role].username &&
-      password === demoUsers[role].password
-    ) {
-      sessionStorage.setItem('fiaLoggedIn', 'true');
-      sessionStorage.setItem('fiaUserRole', role);
-      sessionStorage.setItem('fiaUsername', username);
-
-      unlockApp();
-
-      if (role === 'passenger') {
-        if (ptzCameraBtnElement) {
-          ptzCameraBtnElement.style.display = 'none';
-        }
-        closePtzPanel();
-      } else {
-        if (ptzCameraBtnElement) {
-          ptzCameraBtnElement.style.display = 'flex';
-        }
-      }
-
-      if (loginErrorElement) {
-        loginErrorElement.textContent = '';
-      }
-    } else {
-      if (loginErrorElement) {
-        loginErrorElement.textContent = 'Incorrect username or password.';
-      }
-    }
-  }
-
-  function handleLogout() {
-    sessionStorage.removeItem('fiaLoggedIn');
-    sessionStorage.removeItem('fiaUserRole');
-    sessionStorage.removeItem('fiaUsername');
-
-    if (usernameElement) usernameElement.value = '';
-    if (passwordElement) passwordElement.value = '';
-    if (loginErrorElement) loginErrorElement.textContent = '';
-
-    if (ptzCameraBtnElement) {
-      ptzCameraBtnElement.style.display = 'flex';
-    }
-
-    stopPtzSweep();
-    lockApp();
-  }
-
-  function checkLoginState() {
-    var isLoggedIn = sessionStorage.getItem('fiaLoggedIn');
-    var role = sessionStorage.getItem('fiaUserRole');
-
-    if (isLoggedIn === 'true') {
-      unlockApp();
-
-      if (role === 'passenger') {
-        if (ptzCameraBtnElement) {
-          ptzCameraBtnElement.style.display = 'none';
-        }
-        closePtzPanel();
-      } else {
-        if (ptzCameraBtnElement) {
-          ptzCameraBtnElement.style.display = 'flex';
-        }
-      }
-    } else {
-      lockApp();
-    }
-  }
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -596,10 +474,7 @@
   }
 
   function openPtzPanel() {
-    var role = sessionStorage.getItem('fiaUserRole');
-    if (role !== 'admin') return;
     if (!ptzCameraPanelElement || !ptzOverlayElement) return;
-
     ptzPanelOpen = true;
     ptzCameraPanelElement.classList.add('open');
     ptzOverlayElement.classList.add('visible');
@@ -610,7 +485,6 @@
 
   function closePtzPanel() {
     if (!ptzCameraPanelElement || !ptzOverlayElement) return;
-
     ptzPanelOpen = false;
     ptzCameraPanelElement.classList.remove('open');
     ptzOverlayElement.classList.remove('visible');
@@ -708,8 +582,6 @@
   }
 
   function handlePtzAction(action) {
-    var role = sessionStorage.getItem('fiaUserRole');
-    if (role !== 'admin') return;
     if (!currentScene) return;
 
     stopPtzSweep();
@@ -754,8 +626,6 @@
   }
 
   function handlePtzPreset(preset) {
-    var role = sessionStorage.getItem('fiaUserRole');
-    if (role !== 'admin') return;
     if (!currentScene) return;
 
     stopPtzSweep();
@@ -781,6 +651,105 @@
     }
 
     applyPtzView(next);
+  }
+
+  function setAiResults(result) {
+    if (aiAreaTypeElement) aiAreaTypeElement.textContent = result.areaType;
+    if (aiCrowdLevelElement) aiCrowdLevelElement.textContent = result.crowdLevel;
+    if (aiSecurityStatusElement) aiSecurityStatusElement.textContent = result.securityStatus;
+    if (aiDetectedObjectsElement) aiDetectedObjectsElement.textContent = result.detectedObjects;
+    if (aiRecommendationElement) aiRecommendationElement.textContent = result.recommendation;
+  }
+
+  function classifySceneType(sceneName) {
+    var name = (sceneName || '').toLowerCase();
+    if (name.indexOf('entrance') !== -1) return 'Entrance / Access Point';
+    if (name.indexOf('lobby') !== -1) return 'Lobby / Reception Area';
+    if (name.indexOf('wing') !== -1) return 'Restricted Services Corridor';
+    if (name.indexOf('ground') !== -1) return 'Passenger Circulation Zone';
+    return 'Airport Service Area';
+  }
+
+  function extractDetectedObjects(sceneData) {
+    var labels = [];
+    var source = (sceneData.infoHotspots || []).map(function(h) { return h.title; }).join(', ').toLowerCase();
+
+    if (source.indexOf('desk') !== -1 || source.indexOf('reception') !== -1 || source.indexOf('counter') !== -1) {
+      labels.push('service desk');
+    }
+    if (source.indexOf('cafe') !== -1) {
+      labels.push('cafe');
+    }
+    if (source.indexOf('security') !== -1) {
+      labels.push('security office');
+    }
+    if (source.indexOf('restroom') !== -1 || source.indexOf('washroom') !== -1) {
+      labels.push('restroom');
+    }
+    if (source.indexOf('elevator') !== -1) {
+      labels.push('elevator');
+    }
+    if (source.indexOf('display') !== -1) {
+      labels.push('information display');
+    }
+
+    if (!labels.length) {
+      labels.push('airport facilities');
+    }
+
+    return labels.join(', ');
+  }
+
+  function runAiSceneAnalysis() {
+    if (!currentScene) return;
+
+    var sceneData = currentScene.data;
+    var infoCount = (sceneData.infoHotspots || []).length;
+    var linkCount = (sceneData.linkHotspots || []).length;
+    var areaType = classifySceneType(sceneData.name);
+    var detectedObjects = extractDetectedObjects(sceneData);
+
+    var crowdLevel = 'Low';
+    var securityStatus = 'Normal';
+    var recommendation = 'Continue normal monitoring.';
+
+    if (sceneData.id === '0-entrance') {
+      crowdLevel = 'Medium';
+      securityStatus = 'Observe entry activity';
+      recommendation = 'Monitor visitor flow and entry points.';
+    } else if (sceneData.id === '1-lobby') {
+      crowdLevel = 'Medium';
+      securityStatus = 'Service area active';
+      recommendation = 'Keep reception and waiting area under observation.';
+    } else if (sceneData.id === '2-ground-floor' || sceneData.id === '4-ground-floor-2') {
+      crowdLevel = 'High';
+      securityStatus = 'Busy circulation zone';
+      recommendation = 'Watch movement patterns and maintain clear paths.';
+    } else if (sceneData.id === '3-wing-1') {
+      crowdLevel = 'Low';
+      securityStatus = 'Restricted area';
+      recommendation = 'Check access permissions and patrol the corridor.';
+    }
+
+    if (infoCount >= 3 && linkCount >= 2 && crowdLevel === 'Medium') {
+      crowdLevel = 'Medium to High';
+    }
+
+    setAiResults({
+      areaType: areaType,
+      crowdLevel: crowdLevel,
+      securityStatus: securityStatus,
+      detectedObjects: detectedObjects,
+      recommendation: recommendation
+    });
+
+    if (ptzSceneNoteElement) {
+      ptzSceneNoteElement.textContent = 'AI prototype analyzed the active scene and generated a monitoring summary.';
+    }
+
+    if (ptzCameraStatusElement) {
+      ptzCameraStatusElement.textContent = 'AI READY';
+    }
   }
 
   function createLinkHotspotElement(hotspot) {
@@ -899,7 +868,6 @@
     return null;
   }
 
-  checkLoginState();
   switchScene(scenes[0]);
 
 })();
