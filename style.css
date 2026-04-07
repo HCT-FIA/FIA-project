@@ -1218,4 +1218,80 @@ body.ptz-open {
   .login-card {
     padding: 22px 18px;
   }
+
+  .ptz-ai-card {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(10, 18, 34, 0.92);
+  border: 1px solid rgba(104, 194, 255, 0.18);
+  color: #eef5ff;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+}
+
+.ptz-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ptz-ai-header h3 {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.ptz-analyze-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #56c2ff, #7a8cff);
+  color: #08111f;
+}
+
+.ptz-ai-results {
+  display: grid;
+  gap: 10px;
+}
+
+.ptz-ai-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+}
+
+.ptz-ai-row span {
+  color: rgba(255,255,255,0.74);
+  font-size: 13px;
+}
+
+.ptz-ai-row strong {
+  font-size: 13px;
+  text-align: right;
+}
+
+.ptz-ai-note {
+  margin: 12px 0 0;
+  color: rgba(255,255,255,0.72);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .ptz-ai-header,
+  .ptz-ai-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ptz-ai-row strong {
+    text-align: left;
+  }
+}
 }
