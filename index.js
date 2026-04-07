@@ -138,12 +138,14 @@
 
   scenes.forEach(function(scene) {
     var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
-    el.addEventListener('click', function() {
-      switchScene(scene);
-      if (document.body.classList.contains('mobile')) {
-        hideSceneList();
-      }
-    });
+    if (el) {
+      el.addEventListener('click', function() {
+        switchScene(scene);
+        if (document.body.classList.contains('mobile')) {
+          hideSceneList();
+        }
+      });
+    }
   });
 
   var viewUpElement = document.querySelector('#viewUp');
@@ -178,8 +180,8 @@
   var ptzSceneNoteElement = document.querySelector('#ptzSceneNote');
   var ptzControlElements = document.querySelectorAll('[data-ptz-action]');
   var ptzPresetElements = document.querySelectorAll('[data-ptz-preset]');
-  var ptzPanelOpen = false;
   var ptzZoomLevel = 1;
+
   var aiAnalyzeBtnElement = document.querySelector('#aiAnalyzeBtn');
   var aiAreaTypeElement = document.querySelector('#aiAreaType');
   var aiCrowdLevelElement = document.querySelector('#aiCrowdLevel');
@@ -187,7 +189,6 @@
   var aiDetectedObjectsElement = document.querySelector('#aiDetectedObjects');
   var aiRecommendationElement = document.querySelector('#aiRecommendation');
 
-  // PTZ sweep variables
   var ptzSweepInterval = null;
   var ptzSweepDirection = 1;
   var ptzSweepStep = 0.03;
@@ -475,7 +476,6 @@
 
   function openPtzPanel() {
     if (!ptzCameraPanelElement || !ptzOverlayElement) return;
-    ptzPanelOpen = true;
     ptzCameraPanelElement.classList.add('open');
     ptzOverlayElement.classList.add('visible');
     ptzCameraPanelElement.setAttribute('aria-hidden', 'false');
@@ -485,7 +485,6 @@
 
   function closePtzPanel() {
     if (!ptzCameraPanelElement || !ptzOverlayElement) return;
-    ptzPanelOpen = false;
     ptzCameraPanelElement.classList.remove('open');
     ptzOverlayElement.classList.remove('visible');
     ptzCameraPanelElement.setAttribute('aria-hidden', 'true');
@@ -654,11 +653,11 @@
   }
 
   function setAiResults(result) {
-    if (aiAreaTypeElement) aiAreaTypeElement.textContent = result.areaType;
-    if (aiCrowdLevelElement) aiCrowdLevelElement.textContent = result.crowdLevel;
-    if (aiSecurityStatusElement) aiSecurityStatusElement.textContent = result.securityStatus;
-    if (aiDetectedObjectsElement) aiDetectedObjectsElement.textContent = result.detectedObjects;
-    if (aiRecommendationElement) aiRecommendationElement.textContent = result.recommendation;
+    if (aiAreaTypeElement) aiAreaTypeElement.textContent = result.areaType || 'Unknown';
+    if (aiCrowdLevelElement) aiCrowdLevelElement.textContent = result.crowdLevel || 'Unknown';
+    if (aiSecurityStatusElement) aiSecurityStatusElement.textContent = result.securityStatus || 'Unknown';
+    if (aiDetectedObjectsElement) aiDetectedObjectsElement.textContent = result.detectedObjects || 'Unknown';
+    if (aiRecommendationElement) aiRecommendationElement.textContent = result.recommendation || 'No recommendation';
   }
 
   function classifySceneType(sceneName) {
@@ -672,7 +671,9 @@
 
   function extractDetectedObjects(sceneData) {
     var labels = [];
-    var source = (sceneData.infoHotspots || []).map(function(h) { return h.title; }).join(', ').toLowerCase();
+    var source = (sceneData.infoHotspots || []).map(function(h) {
+      return h.title;
+    }).join(', ').toLowerCase();
 
     if (source.indexOf('desk') !== -1 || source.indexOf('reception') !== -1 || source.indexOf('counter') !== -1) {
       labels.push('service desk');
@@ -701,7 +702,16 @@
   }
 
   function runAiSceneAnalysis() {
-    if (!currentScene) return;
+    if (!currentScene) {
+      setAiResults({
+        areaType: 'No active scene',
+        crowdLevel: 'Unknown',
+        securityStatus: 'Unavailable',
+        detectedObjects: 'None',
+        recommendation: 'Open a scene first.'
+      });
+      return;
+    }
 
     var sceneData = currentScene.data;
     var infoCount = (sceneData.infoHotspots || []).length;
@@ -868,6 +878,83 @@
     return null;
   }
 
+  // LOGIN / LOGOUT
+  var loginOverlayElement = document.querySelector('#loginOverlay');
+  var loginBtnElement = document.querySelector('#loginBtn');
+  var logoutBtnElement = document.querySelector('#logoutBtn');
+  var usernameElement = document.querySelector('#username');
+  var passwordElement = document.querySelector('#password');
+  var roleSelectElement = document.querySelector('#roleSelect');
+  var loginErrorElement = document.querySelector('#loginError');
+  var headerBarElement = document.querySelector('#headerBar');
+  var titleBarElement = document.querySelector('#titleBar');
+
+  function showAppAfterLogin() {
+    if (loginOverlayElement) loginOverlayElement.style.display = 'none';
+    if (headerBarElement) headerBarElement.style.display = 'flex';
+    if (panoElement) panoElement.style.display = 'block';
+    if (sceneListElement) sceneListElement.style.display = 'block';
+    if (sceneListToggleElement) sceneListToggleElement.style.display = 'block';
+    if (autorotateToggleElement) autorotateToggleElement.style.display = 'block';
+    if (fullscreenToggleElement) fullscreenToggleElement.style.display = 'block';
+    if (titleBarElement) titleBarElement.style.display = 'block';
+  }
+
+  function hideAppBeforeLogin() {
+    if (loginOverlayElement) loginOverlayElement.style.display = 'flex';
+    if (headerBarElement) headerBarElement.style.display = 'none';
+    if (panoElement) panoElement.style.display = 'none';
+    if (sceneListElement) sceneListElement.style.display = 'none';
+    if (sceneListToggleElement) sceneListToggleElement.style.display = 'none';
+    if (autorotateToggleElement) autorotateToggleElement.style.display = 'none';
+    if (fullscreenToggleElement) fullscreenToggleElement.style.display = 'none';
+    if (titleBarElement) titleBarElement.style.display = 'none';
+    closePtzPanel();
+  }
+
+  function handleLogin() {
+    var username = usernameElement ? usernameElement.value.trim() : '';
+    var password = passwordElement ? passwordElement.value.trim() : '';
+    var role = roleSelectElement ? roleSelectElement.value : '';
+
+    if (loginErrorElement) loginErrorElement.textContent = '';
+
+    var validPassenger = (role === 'passenger' && username === 'passenger' && password === 'passenger123');
+    var validAdmin = (role === 'admin' && username === 'admin' && password === 'admin123');
+
+    if (validPassenger || validAdmin) {
+      showAppAfterLogin();
+      if (usernameElement) usernameElement.value = '';
+      if (passwordElement) passwordElement.value = '';
+    } else {
+      if (loginErrorElement) {
+        loginErrorElement.textContent = 'Invalid username, password, or role.';
+      }
+    }
+  }
+
+  function handleLogout() {
+    hideAppBeforeLogin();
+    if (loginErrorElement) loginErrorElement.textContent = '';
+  }
+
+  if (loginBtnElement) {
+    loginBtnElement.addEventListener('click', handleLogin);
+  }
+
+  if (logoutBtnElement) {
+    logoutBtnElement.addEventListener('click', handleLogout);
+  }
+
+  if (passwordElement) {
+    passwordElement.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        handleLogin();
+      }
+    });
+  }
+
+  hideAppBeforeLogin();
   switchScene(scenes[0]);
 
 })();
