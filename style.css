@@ -1,1297 +1,298 @@
-* {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -ms-text-size-adjust: none;
-  -moz-text-size-adjust: none;
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
-  -webkit-user-drag: none;
-  -webkit-touch-callout: none;
-  -ms-content-zooming: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-/* FIA Theme Colors */
-:root {
-  --fia-primary: #0a2647;
-  --fia-primary-dark: #061830;
-  --fia-secondary: #144272;
-  --fia-accent: #2c74b3;
-  --fia-light: #205295;
-  --fia-gold: #d4a853;
-  --fia-white: #ffffff;
-  --fia-text-light: #f0f0f0;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  font-family: 'Poppins', "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  background-color: var(--fia-primary-dark);
-  color: var(--fia-white);
-}
-
-a, a:hover, a:active, a:visited {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* Header Bar - FIA Branding */
-#headerBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: linear-gradient(135deg, var(--fia-white) 0%, var(--fia-white) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 10000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  border-bottom: 2px solid var(--fia-gold);
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.fia-logo {
-  height: 40px;
-  width: auto;
-}
-
-.logo-text {
-  font-size: 1.4em;
-  font-weight: 600;
-  color: var(--fia-primary-dark);
-  letter-spacing: 1px;
-}
-
-.header-tagline {
-  font-size: 0.9em;
-  color: var(--fia-gold);
-  font-weight: 300;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-@media (max-width: 600px) {
-  .header-tagline {
-    display: none;
-  }
-  .logo-text {
-    font-size: 1.1em;
-  }
-  #headerBar {
-    height: 50px;
-  }
-}
-
-#pano {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 60px);
-  overflow: hidden;
-}
-
-@media (max-width: 600px) {
-  #pano {
-    top: 50px;
-    height: calc(100% - 50px);
-  }
-}
-
-#titleBar {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  right: 40px;
-  height: 40px;
-  text-align: center;
-}
-
-.mobile #titleBar {
-  height: 50px;
-  right: 50px;
-  top: 50px;
-}
-
-body.fullscreen-enabled #titleBar {
-  right: 80px;
-}
-
-body.fullscreen-enabled.mobile #titleBar {
-  right: 100px;
-}
-
-body.multiple-scenes #titleBar {
-  left: 40px;
-}
-
-body.multiple-scenes.mobile #titleBar {
-  left: 50px;
-}
-
-#titleBar .sceneName {
-  width: 100%;
-  height: 100%;
-  line-height: 30px;
-  padding: 5px;
-  background: linear-gradient(135deg, var(--fia-primary-dark) 0%, var(--fia-secondary) 100%);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  -moz-user-select: text;
-  -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-.mobile #titleBar .sceneName {
-  line-height: 40px;
-}
-
-#fullscreenToggle {
-  display: none;
-  position: absolute;
-  top: 60px;
-  right: 0;
-  width: 40px;
-  height: 40px;
-  padding: 5px;
-  background: linear-gradient(135deg, var(--fia-accent) 0%, var(--fia-light) 100%);
-  transition: all 0.3s ease;
-}
-
-#fullscreenToggle:hover {
-  background: linear-gradient(135deg, var(--fia-light) 0%, var(--fia-accent) 100%);
-}
-
-.mobile #fullscreenToggle {
-  width: 50px;
-  height: 50px;
-}
-
-body.fullscreen-enabled #fullscreenToggle {
-  display: block;
-}
-
-#fullscreenToggle .icon,
-#autorotateToggle .icon,
-#sceneListToggle .icon,
-.viewControlButton .icon {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 30px;
-  height: 30px;
-}
-
-.mobile #fullscreenToggle .icon,
-.mobile #autorotateToggle .icon,
-.mobile #sceneListToggle .icon {
-  top: 10px;
-  right: 10px;
-}
-
-#fullscreenToggle .icon.on,
-#autorotateToggle .icon.on,
-#sceneListToggle .icon.on {
-  display: none;
-}
-
-#fullscreenToggle .icon.off,
-#autorotateToggle .icon.off,
-#sceneListToggle .icon.off {
-  display: block;
-}
-
-#fullscreenToggle.enabled .icon.on,
-#autorotateToggle.enabled .icon.on,
-#sceneListToggle.enabled .icon.on {
-  display: block;
-}
-
-#fullscreenToggle.enabled .icon.off,
-#autorotateToggle.enabled .icon.off,
-#sceneListToggle.enabled .icon.off {
-  display: none;
-}
-
-#autorotateToggle {
-  display: block;
-  position: absolute;
-  top: 60px;
-  right: 0;
-  width: 40px;
-  height: 40px;
-  padding: 5px;
-  background: linear-gradient(135deg, var(--fia-accent) 0%, var(--fia-light) 100%);
-  transition: all 0.3s ease;
-}
-
-#autorotateToggle:hover {
-  background: linear-gradient(135deg, var(--fia-light) 0%, var(--fia-accent) 100%);
-}
-
-.mobile #autorotateToggle {
-  width: 50px;
-  height: 50px;
-}
-
-body.fullscreen-enabled #autorotateToggle {
-  right: 40px;
-}
-
-body.fullscreen-enabled.mobile #autorotateToggle {
-  right: 50px;
-}
-
-#sceneListToggle {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  padding: 5px;
-  background: linear-gradient(135deg, var(--fia-accent) 0%, var(--fia-light) 100%);
-  transition: all 0.3s ease;
-}
-
-#sceneListToggle:hover {
-  background: linear-gradient(135deg, var(--fia-light) 0%, var(--fia-accent) 100%);
-}
-
-.mobile #sceneListToggle {
-  width: 50px;
-  height: 50px;
-}
-
-#sceneListToggle .text {
-  position: absolute;
-  top: 5px;
-  left: 15px;
-  width: 100%;
-  line-height: 30px;
-}
-
-#sceneList {
-  position: absolute;
-  top: 60px;
-  left: -260px;
-  padding-top: 40px;
-  width: 260px;
-  max-height: calc(100% - 60px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  margin-left: 0;
-  -webkit-transition: margin-left 0.5s ease-in-out;
-  transition: margin-left 0.5s ease-in-out;
-}
-
-.mobile #sceneList {
-  width: 100%;
-  height: 100%;
-  left: -100%;
-  padding-top: 50px;
-}
-
-.mobile #sceneList.enabled {
-  margin-left: 100%;
-}
-
-#sceneList.enabled {
-  margin-left: 260px;
-}
-
-.scene-list-header {
-  background: linear-gradient(135deg, var(--fia-primary) 0%, var(--fia-secondary) 100%);
-  padding: 15px;
-  border-bottom: 2px solid var(--fia-gold);
-}
-
-.scene-list-title {
-  font-weight: 600;
-  font-size: 1.1em;
-  color: var(--fia-white);
-  letter-spacing: 1px;
-}
-
-.scene-icon {
-  margin-right: 8px;
-}
-
-#sceneList .scenes {
-  width: 100%;
-  background: linear-gradient(180deg, var(--fia-primary) 0%, var(--fia-primary-dark) 100%);
-}
-
-#sceneList .scene {
-  display: block;
-  width: 100%;
-  height: 45px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  transition: all 0.3s ease;
-}
-
-.mobile #sceneList .scene {
-  height: 50px;
-}
-
-#sceneList .scene .text {
-  width: 100%;
-  height: 100%;
-  padding: 0 15px;
-  line-height: 45px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-}
-
-.mobile #sceneList .scene .text {
-  line-height: 50px;
-}
-
-.no-touch #sceneList .scene:hover {
-  background: linear-gradient(90deg, var(--fia-accent) 0%, var(--fia-secondary) 100%);
-  padding-left: 5px;
-}
-
-#sceneList .scene.current {
-  background: linear-gradient(90deg, var(--fia-gold) 0%, var(--fia-accent) 100%);
-  color: var(--fia-white);
-  font-weight: 500;
-}
-
-body.single-scene #sceneList,
-body.single-scene #sceneListToggle {
-  display: none;
-}
-
-/* Link hotspot */
-.link-hotspot {
-  width: 60px;
-  height: 60px;
-  margin-left: -30px;
-  margin-top: -30px;
-  opacity: 0.9;
-  transition: opacity 0.2s;
-}
-
-.no-touch .link-hotspot:hover {
-  opacity: 1;
-}
-
-.mobile .link-hotspot {
-  width: 70px;
-  height: 70px;
-}
-
-.link-hotspot-icon {
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-.link-hotspot-tooltip {
-  position: absolute;
-  left: 100%;
-  top: 14px;
-  margin-left: 3px;
-  font-size: 16px;
-  max-width: 300px;
-  padding: 8px 10px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, var(--fia-primary) 0%, var(--fia-secondary) 100%);
-  border: 1px solid var(--fia-gold);
-  color: #fff;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateX(-8px);
-  transition: transform 0.3s, opacity 0.3s;
-  pointer-events: none;
-}
-
-.no-touch .link-hotspot:hover .link-hotspot-tooltip {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: all;
-}
-
-.tooltip-fallback .link-hotspot-tooltip {
-  display: none;
-}
-.no-touch .tooltip-fallback .link-hotspot:hover .link-hotspot-tooltip {
-  display: block;
-}
-
-/* Info hotspot */
-.info-hotspot {
-  line-height: 1.2em;
-  opacity: 0.9;
-  transition: opacity 0.2s 0.2s;
-}
-
-.no-touch .info-hotspot:hover {
-  opacity: 1;
-  transition: opacity 0.2s;
-}
-
-.info-hotspot.visible {
-  opacity: 1;
-}
-
-.info-hotspot .info-hotspot-header {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, var(--fia-accent) 0%, var(--fia-light) 100%);
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: width 0.3s ease-in-out 0.5s, border-radius 0.3s ease-in-out 0.5s;
-}
-
-.mobile .info-hotspot .info-hotspot-header {
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-}
-
-.desktop.no-touch .info-hotspot .info-hotspot-header:hover {
-  width: 260px;
-  border-radius: 5px;
-  transition: width 0.3s ease-in-out, border-radius 0.3s ease-in-out;
-}
-
-.desktop .info-hotspot.visible .info-hotspot-header,
-.desktop.no-touch .info-hotspot.visible .info-hotspot-header:hover {
-  width: 260px;
-  border-radius: 5px;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.info-hotspot .info-hotspot-icon-wrapper {
-  width: 40px;
-  height: 40px;
-}
-
-.mobile .info-hotspot .info-hotspot-icon-wrapper {
-  width: 50px;
-  height: 50px;
-}
-
-.info-hotspot .info-hotspot-icon {
-  width: 90%;
-  height: 90%;
-  margin: 5%;
-}
-
-.info-hotspot .info-hotspot-title-wrapper {
-  position: absolute;
-  left: 40px;
-  top: 0;
-  width: 0;
-  height: 40px;
-  padding: 0;
-  overflow: hidden;
-  transition: width 0s 0.4s, padding 0s 0.4s;
-}
-
-.desktop .info-hotspot.visible .info-hotspot-title-wrapper,
-.desktop.no-touch .info-hotspot .info-hotspot-header:hover .info-hotspot-title-wrapper {
-  width: 220px;
-  padding: 0 5px;
-}
-
-.info-hotspot .info-hotspot-title-wrapper:before,
-.info-hotspot-modal .info-hotspot-title-wrapper:before {
-  content: '';
-  display: inline-block;
-  vertical-align: middle;
-  height: 100%;
-}
-
-.info-hotspot .info-hotspot-title,
-.info-hotspot-modal .info-hotspot-title {
-  display: inline-block;
-  vertical-align: middle;
-  -moz-user-select: text;
-  -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-.info-hotspot .info-hotspot-close-wrapper {
-  position: absolute;
-  left: 260px;
-  top: 0;
-  height: 40px;
-  width: 40px;
-  border-top-right-radius: 5px;
-  background: var(--fia-gold);
-  visibility: hidden;
-  transform: perspective(200px) rotateY(90deg);
-  transform-origin: 0 50% 0;
-  transition: transform 0.3s 0.3s, visibility 0s 0.6s;
-}
-
-.desktop .info-hotspot.visible .info-hotspot-close-wrapper {
-  visibility: visible;
-  transform: perspective(200px) rotateY(0deg);
-  transition: transform 0.3s, visibility 0s 0s;
-}
-
-.info-hotspot .info-hotspot-close-icon {
-  width: 70%;
-  height: 70%;
-  margin: 15%;
-}
-
-.info-hotspot .info-hotspot-text {
-  position: absolute;
-  width: 300px;
-  height: auto;
-  max-height: 200px;
-  top: 40px;
-  left: 0;
-  padding: 10px;
-  background: linear-gradient(180deg, var(--fia-primary) 0%, var(--fia-primary-dark) 100%);
-  border: 1px solid var(--fia-gold);
-  border-top: none;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  overflow-y: auto;
-  visibility: hidden;
-  transform: perspective(200px) rotateX(-89.999deg);
-  transform-origin: 50% 0 0;
-  transition: transform 0.3s, visibility 0s 0.3s;
-  -moz-user-select: text;
-  -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-.desktop .info-hotspot.visible .info-hotspot-text {
-  visibility: visible;
-  transform: perspective(200px) rotateX(0deg);
-  transition: transform 0.3s 0.3s, visibility 0s 0s;
-}
-
-/* Info hotspot modal */
-.desktop .info-hotspot-modal {
-  display: none;
-}
-
-.info-hotspot-modal {
-  top: 0;
-  left: 0;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 11000 !important;
-  background-color: rgba(0,0,0,.5);
-  line-height: 1.2em;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease-in-out 0.5s, visibility 0s 0.7s;
-}
-
-.info-hotspot-modal.visible {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.2s ease-in-out, visibility 0s 0s;
-}
-
-.info-hotspot-modal .info-hotspot-header {
-  position: absolute;
-  top: 60px;
-  left: 10px;
-  right: 10px;
-  width: auto;
-  height: 50px;
-  background: linear-gradient(135deg, var(--fia-primary) 0%, var(--fia-secondary) 100%);
-  border: 1px solid var(--fia-gold);
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out 0.2s;
-}
-
-.info-hotspot-modal.visible .info-hotspot-header {
-  opacity: 1;
-}
-
-.info-hotspot-modal .info-hotspot-icon-wrapper {
-  width: 50px;
-  height: 50px;
-}
-
-.info-hotspot-modal .info-hotspot-icon {
-  width: 90%;
-  height: 90%;
-  margin: 5%;
-}
-
-.info-hotspot-modal .info-hotspot-title-wrapper {
-  position: absolute;
-  top: 0;
-  left: 50px;
-  right: 50px;
-  width: auto;
-  height: 50px;
-  padding: 0 10px;
-}
-
-.info-hotspot-modal .info-hotspot-close-wrapper {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  background: var(--fia-gold);
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.info-hotspot-modal .info-hotspot-close-wrapper:hover {
-  background: var(--fia-accent);
-}
-
-.info-hotspot-modal .info-hotspot-close-icon {
-  width: 70%;
-  height: 70%;
-  margin: 15%;
-}
-
-.info-hotspot-modal .info-hotspot-text {
-  position: absolute;
-  top: 110px;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-  padding: 10px;
-  background: linear-gradient(180deg, var(--fia-primary) 0%, var(--fia-primary-dark) 100%);
-  border: 1px solid var(--fia-gold);
-  overflow-y: auto;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  -moz-user-select: text;
-  -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-.info-hotspot-modal.visible .info-hotspot-text {
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out 0.4s;
-}
-
-/* View control buttons */
-.viewControlButton {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 40px;
-  height: 40px;
-  padding: 5px;
-  background: linear-gradient(135deg, var(--fia-accent) 0%, var(--fia-light) 100%);
-  transition: all 0.3s ease;
-}
-
-.viewControlButton:hover {
-  background: linear-gradient(135deg, var(--fia-light) 0%, var(--fia-accent) 100%);
-}
-
-body.view-control-buttons .viewControlButton {
-  display: block;
-}
-
-@media (max-width: 600px) {
-  body.view-control-buttons .viewControlButton {
-    display: none;
-  }
-}
-
-.viewControlButton-1 { margin-left: -145px; }
-.viewControlButton-2 { margin-left: -95px; }
-.viewControlButton-3 { margin-left: -45px; }
-.viewControlButton-4 { margin-left: 5px; }
-.viewControlButton-5 { margin-left: 55px; }
-.viewControlButton-6 { margin-left: 105px; }
-
-/* PTZ Security Camera */
-#ptzCameraBtn {
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--fia-primary) 0%, var(--fia-secondary) 100%);
-  color: var(--fia-white);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid rgba(212,168,83,0.65);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-#ptzCameraBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.24);
-}
-
-.camera-btn-icon {
-  font-size: 1.1rem;
-}
-
-.ptz-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 14, 27, 0.48);
-  z-index: 12000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
-}
-
-.ptz-overlay.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.ptz-panel {
-  position: fixed;
-  top: 78px;
-  right: 18px;
-  width: min(390px, calc(100vw - 36px));
-  max-height: calc(100vh - 96px);
-  overflow-y: auto;
-  padding: 18px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(6,24,48,0.98) 0%, rgba(10,38,71,0.98) 100%);
-  border: 1px solid rgba(212,168,83,0.45);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.35);
-  z-index: 12500;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(12px) scale(0.98);
-  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
-}
-
-.ptz-panel.open {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0) scale(1);
-}
-
-.ptz-panel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.ptz-eyebrow {
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fia-gold);
-  margin-bottom: 6px;
-}
-
-.ptz-panel-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
-.ptz-close {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.08);
-  color: var(--fia-white);
-  font-size: 1.4rem;
-  cursor: pointer;
-}
-
-.ptz-live-card {
-  margin-bottom: 14px;
-}
-
-.ptz-live-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.88rem;
-  margin-bottom: 10px;
-  color: var(--fia-text-light);
-}
-
-.ptz-live-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ff4d5a;
-  box-shadow: 0 0 0 6px rgba(255,77,90,0.15);
-}
-
-.ptz-screen {
-  position: relative;
-  min-height: 215px;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(212,168,83,0.35);
-  background:
-    radial-gradient(circle at center, rgba(44,116,179,0.18) 0%, rgba(7,22,42,0.84) 58%, rgba(4,11,22,0.98) 100%),
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-}
-
-.ptz-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
-  background-size: 36px 36px;
-}
-
-.ptz-reticle {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 92px;
-  height: 92px;
-  margin-left: -46px;
-  margin-top: -46px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-radius: 50%;
-}
-
-.ptz-reticle::before,
-.ptz-reticle::after {
-  content: '';
-  position: absolute;
-  background: rgba(255,255,255,0.35);
-}
-
-.ptz-reticle::before {
-  left: 50%;
-  top: -18px;
-  width: 2px;
-  height: 128px;
-  transform: translateX(-50%);
-}
-
-.ptz-reticle::after {
-  top: 50%;
-  left: -18px;
-  width: 128px;
-  height: 2px;
-  transform: translateY(-50%);
-}
-
-.ptz-corner {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  border-color: var(--fia-gold);
-  border-style: solid;
-}
-.ptz-corner-tl { top: 14px; left: 14px; border-width: 2px 0 0 2px; }
-.ptz-corner-tr { top: 14px; right: 14px; border-width: 2px 2px 0 0; }
-.ptz-corner-bl { bottom: 14px; left: 14px; border-width: 0 0 2px 2px; }
-.ptz-corner-br { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; }
-
-.ptz-screen-label,
-.ptz-status-chip,
-.ptz-camera-id,
-.ptz-location,
-.ptz-meta {
-  position: absolute;
-  z-index: 1;
-}
-
-.ptz-screen-label {
-  top: 14px;
-  left: 16px;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-}
-
-.ptz-status-chip {
-  top: 14px;
-  right: 16px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(49, 180, 108, 0.2);
-  border: 1px solid rgba(49, 180, 108, 0.45);
-  font-size: 0.76rem;
-  font-weight: 600;
-}
-
-.ptz-camera-id {
-  left: 16px;
-  bottom: 58px;
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.ptz-location {
-  left: 16px;
-  bottom: 36px;
-  font-size: 0.98rem;
-}
-
-.ptz-meta {
-  left: 16px;
-  right: 16px;
-  bottom: 14px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 0.8rem;
-  color: rgba(240,240,240,0.88);
-}
-
-.ptz-scene-note {
-  margin-bottom: 14px;
-  font-size: 0.92rem;
-  color: rgba(240,240,240,0.88);
-}
-
-.ptz-controls-grid {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.ptz-row,
-.ptz-zoom-row,
-.ptz-presets {
-  display: grid;
-  gap: 10px;
-}
-
-.ptz-row { grid-template-columns: repeat(3, 1fr); }
-.ptz-zoom-row { grid-template-columns: repeat(2, 1fr); }
-.ptz-presets { grid-template-columns: repeat(3, 1fr); }
-
-.ptz-control,
-.ptz-preset {
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.08);
-  color: var(--fia-white);
-  border-radius: 14px;
-  padding: 12px 10px;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-}
-
-.ptz-control:hover,
-.ptz-preset:hover {
-  background: rgba(44,116,179,0.22);
-  border-color: rgba(212,168,83,0.45);
-  transform: translateY(-1px);
-}
-
-.ptz-center {
-  background: rgba(212,168,83,0.16);
-}
-
-body.ptz-open {
-  overflow: hidden;
-}
-
-@media (max-width: 780px) {
-  #ptzCameraBtn {
-    padding: 8px 12px;
-  }
-
-  .camera-btn-text {
-    display: none;
-  }
-
-  .ptz-panel {
-    top: 62px;
-    right: 10px;
-    width: calc(100vw - 20px);
-    max-height: calc(100vh - 74px);
-    padding: 14px;
-  }
-
-  .ptz-presets {
-    grid-template-columns: 1fr;
-  }
-
-  .ptz-meta,
-  .ptz-zoom-row {
-    grid-template-columns: 1fr;
-  }
-
-  .ptz-meta {
-    display: grid;
-  }
-}
-
-/* LOGIN */
-.login-overlay {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(6,24,48,0.96) 0%, rgba(10,38,71,0.96) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20000;
-  padding: 20px;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 430px;
-  background: #ffffff;
-  color: #0a2647;
-  border-radius: 22px;
-  padding: 28px;
-  box-shadow: 0 18px 50px rgba(0,0,0,0.35);
-  border: 2px solid rgba(212,168,83,0.35);
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 22px;
-}
-
-.login-header h1 {
-  margin: 0 0 8px 0;
-  font-size: 1.35rem;
-  color: #0a2647;
-}
-
-.login-header p {
-  margin: 0;
-  color: #2c74b3;
-  font-weight: 500;
-}
-
-.login-role-box,
-.login-input-box {
-  margin-bottom: 16px;
-}
-
-.login-role-box label,
-.login-input-box label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #0a2647;
-}
-
-.login-role-box select,
-.login-input-box input {
-  width: 100%;
-  padding: 13px 14px;
-  border-radius: 12px;
-  border: 1px solid #cfd8e3;
-  font-family: inherit;
-  font-size: 15px;
-  outline: none;
-}
-
-.login-role-box select:focus,
-.login-input-box input:focus {
-  border-color: #2c74b3;
-  box-shadow: 0 0 0 3px rgba(44,116,179,0.15);
-}
-
-.login-btn {
-  width: 100%;
-  border: none;
-  background: linear-gradient(135deg, #0a2647 0%, #144272 100%);
-  color: #ffffff;
-  border-radius: 14px;
-  padding: 14px;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 6px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.login-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(10,38,71,0.22);
-}
-
-.login-error {
-  min-height: 22px;
-  margin: 12px 0 0 0;
-  color: #d62828;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-}
-
-.login-demo-box {
-  margin-top: 18px;
-  padding: 14px;
-  border-radius: 14px;
-  background: #f5f8fc;
-  border: 1px solid #dde6ef;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.login-demo-box p {
-  margin: 0;
-}
-
-.login-demo-box span {
-  color: #144272;
-  font-weight: 600;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logout-btn {
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #8b1e3f 0%, #b23a48 100%);
-  color: #fff;
-  padding: 10px 16px;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-}
-
-.logout-btn:hover {
-  transform: translateY(-1px);
-}
-
-@media (max-width: 700px) {
-  .header-actions {
-    gap: 8px;
-  }
-
-  .logout-btn {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-
-  .login-card {
-    padding: 22px 18px;
-  }
-
-  .ptz-ai-card {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(10, 18, 34, 0.92);
-  border: 1px solid rgba(104, 194, 255, 0.18);
-  color: #eef5ff;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.22);
-}
-
-.ptz-ai-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.ptz-ai-header h3 {
-  margin: 2px 0 0;
-  font-size: 18px;
-}
-
-.ptz-analyze-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: linear-gradient(135deg, #56c2ff, #7a8cff);
-  color: #08111f;
-}
-
-.ptz-ai-results {
-  display: grid;
-  gap: 10px;
-}
-
-.ptz-ai-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-}
-
-.ptz-ai-row span {
-  color: rgba(255,255,255,0.74);
-  font-size: 13px;
-}
-
-.ptz-ai-row strong {
-  font-size: 13px;
-  text-align: right;
-}
-
-.ptz-ai-note {
-  margin: 12px 0 0;
-  color: rgba(255,255,255,0.72);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-@media (max-width: 700px) {
-  .ptz-ai-header,
-  .ptz-ai-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .ptz-ai-row strong {
-    text-align: left;
-  }
-}
-}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fujairah International Airport - Virtual Tour Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+  <style>@-ms-viewport { width: device-width; }</style>
+  <link rel="stylesheet" href="vendor/reset.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="multiple-scenes view-control-buttons">
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Fujairah International Airport</h1>
+        <p>Smart Virtual Tour Access</p>
+      </div>
+
+      <div class="login-role-box">
+        <label for="roleSelect">Select Role</label>
+        <select id="roleSelect">
+          <option value="passenger">Passenger</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="login-input-box">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username">
+      </div>
+
+      <div class="login-input-box">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password">
+      </div>
+
+      <button id="loginBtn" class="login-btn" type="button">Login</button>
+
+      <p id="loginError" class="login-error"></p>
+
+      <div class="login-demo-box">
+        <p><strong>Demo Accounts:</strong></p>
+        <p>Passenger: <span>passenger</span> / <span>passenger123</span></p>
+        <p>Admin: <span>admin</span> / <span>admin123</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Bar -->
+  <div id="headerBar">
+    <div class="logo-section">
+      <img src="https://www.fujairah-airport.ae/images/logo.png" alt="FIA Logo" class="fia-logo" onerror="this.style.display='none'">
+      <span class="logo-text">Virtual Tour</span>
+    </div>
+    <div class="header-tagline">Your Gateway to the World</div>
+    <div class="header-actions">
+      <button id="ptzCameraBtn" type="button" aria-label="Open PTZ security camera panel">
+        <span class="camera-btn-icon">📹</span>
+        <span class="camera-btn-text">PTZ Camera</span>
+      </button>
+      <button id="logoutBtn" type="button" class="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <div id="ptzCameraPanel" class="ptz-panel" aria-hidden="true">
+    <div class="ptz-panel-header">
+      <div>
+        <div class="ptz-eyebrow">Security Monitoring</div>
+        <h2>PTZ Security Camera</h2>
+      </div>
+      <button id="ptzCloseBtn" class="ptz-close" type="button" aria-label="Close PTZ security camera panel">×</button>
+    </div>
+
+    <div class="ptz-live-card">
+      <div class="ptz-live-top">
+        <span class="ptz-live-dot"></span>
+        <span>Live Monitoring Simulation</span>
+      </div>
+
+      <div class="ptz-screen">
+        <div class="ptz-grid"></div>
+        <div class="ptz-reticle"></div>
+        <div class="ptz-corner ptz-corner-tl"></div>
+        <div class="ptz-corner ptz-corner-tr"></div>
+        <div class="ptz-corner ptz-corner-bl"></div>
+        <div class="ptz-corner ptz-corner-br"></div>
+
+        <div class="ptz-screen-label">Fujairah International Airport</div>
+        <div class="ptz-status-chip" id="ptzCameraStatus">ACTIVE</div>
+        <div class="ptz-camera-id" id="ptzCameraId">CAM-ENT-01</div>
+        <div class="ptz-location" id="ptzCameraLocation">Entrance Surveillance Zone</div>
+
+        <div class="ptz-meta">
+          <span id="ptzDirection">Direction: North Gate</span>
+          <span id="ptzZoom">Zoom: 1.0x</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ptz-scene-note" id="ptzSceneNote">
+      Monitoring the current scene with pan, tilt, and zoom controls.
+    </div>
+
+    <div class="ptz-controls-grid">
+      <button type="button" class="ptz-control" data-ptz-action="up">Tilt +</button>
+
+      <div class="ptz-row">
+        <button type="button" class="ptz-control" data-ptz-action="left">Pan ←</button>
+        <button type="button" class="ptz-control ptz-center" data-ptz-action="center">Center</button>
+        <button type="button" class="ptz-control" data-ptz-action="right">Pan →</button>
+      </div>
+
+      <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
+    </div>
+
+    <div class="ptz-zoom-row">
+      <button type="button" class="ptz-control" data-ptz-action="zoomIn">Zoom In</button>
+      <button type="button" class="ptz-control" data-ptz-action="zoomOut">Zoom Out</button>
+    </div>
+
+    <div class="ptz-presets">
+      <button type="button" class="ptz-preset" data-ptz-preset="wide">Wide View</button>
+      <button type="button" class="ptz-preset" data-ptz-preset="focus">Focus Gate</button>
+      <button type="button" class="ptz-preset" data-ptz-preset="secure">Security Sweep</button>
+    </div>
+
+    <div class="ptz-ai-card">
+      <div class="ptz-ai-header">
+        <div>
+          <div class="ptz-eyebrow">AI Prototype</div>
+          <h3>AI Scene Analysis</h3>
+        </div>
+        <button id="aiAnalyzeBtn" class="ptz-analyze-btn" type="button">Analyze Scene</button>
+      </div>
+
+      <div class="ptz-ai-results">
+        <div class="ptz-ai-row">
+          <span>Detected Area</span>
+          <strong id="aiAreaType">Not analyzed</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Crowd Level</span>
+          <strong id="aiCrowdLevel">-</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Security Status</span>
+          <strong id="aiSecurityStatus">-</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Detected Objects</span>
+          <strong id="aiDetectedObjects">-</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Recommendation</span>
+          <strong id="aiRecommendation">Press Analyze Scene</strong>
+        </div>
+      </div>
+
+      <p class="ptz-ai-note">
+        Prototype AI analysis based on the active airport scene and location metadata.
+      </p>
+    </div>
+
+    <div class="camera-ai-card">
+      <div class="ptz-ai-header">
+        <div>
+          <div class="ptz-eyebrow">Mobile Camera</div>
+          <h3>Capture and Analyze Scene</h3>
+        </div>
+      </div>
+
+      <div class="camera-upload-box">
+        <input id="cameraCaptureInput" type="file" accept="image/*" capture="environment">
+      </div>
+
+      <div class="camera-preview-box">
+        <img id="capturedScenePreview" alt="Captured scene preview" style="display:none; max-width:100%; border-radius:12px; margin-top:10px;">
+      </div>
+
+      <div class="camera-analyze-actions">
+        <button id="analyzeCapturedSceneBtn" class="ptz-analyze-btn" type="button">Analyze Captured Scene</button>
+      </div>
+
+      <div class="ptz-ai-results">
+        <div class="ptz-ai-row">
+          <span>Captured Scene Type</span>
+          <strong id="capturedSceneType">Not analyzed</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Estimated Crowd Level</span>
+          <strong id="capturedCrowdLevel">-</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Security Status</span>
+          <strong id="capturedSecurityStatus">-</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Detected Elements</span>
+          <strong id="capturedDetectedObjects">-</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Recommendation</span>
+          <strong id="capturedRecommendation">Capture an image first</strong>
+        </div>
+      </div>
+
+      <p class="ptz-ai-note">
+        Prototype mobile scene analysis using captured image input from the phone camera.
+      </p>
+    </div>
+  </div>
+
+  <div id="ptzOverlay" class="ptz-overlay" aria-hidden="true"></div>
+
+  <div id="pano"></div>
+
+  <div id="sceneList">
+    <div class="scene-list-header">
+      <span class="scene-list-title">Explore Locations</span>
+    </div>
+    <ul class="scenes">
+      <a href="javascript:void(0)" class="scene" data-id="0-entrance">
+        <li class="text"><span class="scene-icon">📍</span> Entrance</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="1-lobby">
+        <li class="text"><span class="scene-icon">📍</span> Lobby</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="2-ground-floor">
+        <li class="text"><span class="scene-icon">📍</span> Ground floor</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="3-wing-1">
+        <li class="text"><span class="scene-icon">📍</span> Wing 1</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="4-ground-floor-2">
+        <li class="text"><span class="scene-icon">📍</span> Ground floor 2</li>
+      </a>
+    </ul>
+  </div>
+
+  <div id="titleBar">
+    <h1 class="sceneName"></h1>
+  </div>
+
+  <a href="javascript:void(0)" id="autorotateToggle">
+    <img class="icon off" src="img/play.png">
+    <img class="icon on" src="img/pause.png">
+  </a>
+
+  <a href="javascript:void(0)" id="fullscreenToggle">
+    <img class="icon off" src="img/fullscreen.png">
+    <img class="icon on" src="img/windowed.png">
+  </a>
+
+  <a href="javascript:void(0)" id="sceneListToggle">
+    <img class="icon off" src="img/expand.png">
+    <img class="icon on" src="img/collapse.png">
+  </a>
+
+  <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
+    <img class="icon" src="img/up.png">
+  </a>
+  <a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
+    <img class="icon" src="img/down.png">
+  </a>
+  <a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
+    <img class="icon" src="img/left.png">
+  </a>
+  <a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
+    <img class="icon" src="img/right.png">
+  </a>
+  <a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
+    <img class="icon" src="img/plus.png">
+  </a>
+  <a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
+    <img class="icon" src="img/minus.png">
+  </a>
+
+  <script src="vendor/screenfull.min.js"></script>
+  <script src="vendor/bowser.min.js"></script>
+  <script src="vendor/marzipano.js"></script>
+
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
