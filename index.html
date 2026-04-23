@@ -1,344 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fujairah Airport</title>
+
+<style>
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0a1a2f, #1e3c72);
+  background: url('img/airport.jpg') no-repeat center/cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-div {
+/* Login Box */
+.login-container {
   backdrop-filter: blur(15px);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
   padding: 40px;
   border-radius: 20px;
   width: 320px;
-  margin: auto;
-  margin-top: 80px;
+  text-align: center;
   color: white;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+h1 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+p {
+  color: #ccc;
+  font-size: 13px;
+}
+
+select, input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.demo {
+  margin-top: 15px;
+  font-size: 12px;
+  color: #aaa;
 }
 </style>
-  <title>Fujairah International Airport - Virtual Tour Demo</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
-  <style>@-ms-viewport { width: device-width; }</style>
 
-  <link rel="stylesheet" href="vendor/reset.min.css">
-  <link rel="stylesheet" href="style.css">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="multiple-scenes view-control-buttons">
+<body>
 
-  <!-- LOGIN SCREEN -->
-  <div id="loginOverlay" class="login-overlay">
-    <div class="login-card">
-      <div class="login-header">
-        <h1>Fujairah International Airport</h1>
-        <p>Smart Virtual Tour Access</p>
-      </div>
+<div class="login-container">
+  <h1>Fujairah International Airport</h1>
+  <p>Smart Virtual Tour Access</p>
 
-      <div class="login-role-box">
-        <label for="roleSelect">Select Role</label>
-        <select id="roleSelect">
-          <option value="passenger">Passenger</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
+  <select>
+    <option>Passenger</option>
+    <option>Admin</option>
+  </select>
 
-      <div class="login-input-box">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter username">
-      </div>
+  <input type="text" placeholder="Username">
+  <input type="password" placeholder="Password">
 
-      <div class="login-input-box">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter password">
-      </div>
+  <button onclick="login()">Login</button>
 
-      <button id="loginBtn" class="login-btn" type="button">Login</button>
-
-      <p id="loginError" class="login-error"></p>
-
-      <div class="login-demo-box">
-        <p><strong>Demo Accounts:</strong></p>
-        <p>Passenger: <span>passenger</span> / <span>passenger123</span></p>
-        <p>Admin: <span>admin</span> / <span>admin123</span></p>
-      </div>
-    </div>
+  <div class="demo">
+    Passenger: passenger / passenger123 <br>
+    Admin: admin / admin123
   </div>
+</div>
 
-  <!-- Header -->
-  <div id="headerBar">
-    <div class="logo-section">
-      <img src="https://www.fujairah-airport.ae/images/logo.png" alt="FIA Logo" class="fia-logo" onerror="this.style.display='none'">
-      <span class="logo-text">Virtual Tour</span>
-    </div>
+<script>
+function login() {
+  alert("Login successful (Demo)");
+}
+</script>
 
-    <div class="header-tagline">Your Gateway to the World</div>
-
-    <div class="header-actions">
-      <button id="ptzCameraBtn" type="button" aria-label="Open PTZ security camera panel">
-        <span class="camera-btn-icon">📹</span>
-        <span class="camera-btn-text">PTZ Camera</span>
-      </button>
-      <button id="logoutBtn" type="button" class="logout-btn">Logout</button>
-    </div>
-  </div>
-
-  <!-- PTZ PANEL -->
-  <div id="ptzCameraPanel" class="ptz-panel" aria-hidden="true">
-    <div class="ptz-panel-header">
-      <div>
-        <div class="ptz-eyebrow">Security Monitoring</div>
-        <h2>PTZ Security Camera</h2>
-      </div>
-      <button id="ptzCloseBtn" class="ptz-close" type="button" aria-label="Close PTZ security camera panel">×</button>
-    </div>
-
-    <div class="ptz-live-card">
-      <div class="ptz-live-top">
-        <span class="ptz-live-dot"></span>
-        <span>Live Monitoring Simulation</span>
-      </div>
-
-      <div class="ptz-screen">
-        <div class="ptz-grid"></div>
-        <div class="ptz-reticle"></div>
-        <div class="ptz-corner ptz-corner-tl"></div>
-        <div class="ptz-corner ptz-corner-tr"></div>
-        <div class="ptz-corner ptz-corner-bl"></div>
-        <div class="ptz-corner ptz-corner-br"></div>
-
-        <div class="ptz-screen-label">Fujairah International Airport</div>
-        <div class="ptz-status-chip" id="ptzCameraStatus">ACTIVE</div>
-        <div class="ptz-camera-id" id="ptzCameraId">CAM-ENT-01</div>
-        <div class="ptz-location" id="ptzCameraLocation">Entrance Surveillance Zone</div>
-
-        <div class="ptz-meta">
-          <span id="ptzDirection">Direction: North Gate</span>
-          <span id="ptzZoom">Zoom: 1.0x</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ptz-scene-note" id="ptzSceneNote">
-      Monitoring the current scene with pan, tilt, and zoom controls.
-    </div>
-
-    <div class="ptz-controls-grid">
-      <button type="button" class="ptz-control" data-ptz-action="up">Tilt +</button>
-
-      <div class="ptz-row">
-        <button type="button" class="ptz-control" data-ptz-action="left">Pan ←</button>
-        <button type="button" class="ptz-control ptz-center" data-ptz-action="center">Center</button>
-        <button type="button" class="ptz-control" data-ptz-action="right">Pan →</button>
-      </div>
-
-      <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
-    </div>
-
-    <div class="ptz-zoom-row">
-      <button type="button" class="ptz-control" data-ptz-action="zoomIn">Zoom In</button>
-      <button type="button" class="ptz-control" data-ptz-action="zoomOut">Zoom Out</button>
-    </div>
-
-    <div class="ptz-presets">
-      <button type="button" class="ptz-preset" data-ptz-preset="wide">Wide View</button>
-      <button type="button" class="ptz-preset" data-ptz-preset="focus">Focus Gate</button>
-      <button type="button" class="ptz-preset" data-ptz-preset="secure">Security Sweep</button>
-    </div>
-
-    <!-- AI SCENE ANALYSIS -->
-    <div class="ptz-ai-card">
-      <div class="ptz-ai-header">
-        <div>
-          <div class="ptz-eyebrow">AI Prototype</div>
-          <h3>AI Scene Analysis</h3>
-        </div>
-        <button id="aiAnalyzeBtn" class="ptz-analyze-btn" type="button">Analyze Scene</button>
-      </div>
-
-      <div class="ptz-ai-results">
-        <div class="ptz-ai-row">
-          <span>Detected Area</span>
-          <strong id="aiAreaType">Not analyzed</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Crowd Level</span>
-          <strong id="aiCrowdLevel">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Security Status</span>
-          <strong id="aiSecurityStatus">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Detected Objects</span>
-          <strong id="aiDetectedObjects">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Recommendation</span>
-          <strong id="aiRecommendation">Press Analyze Scene</strong>
-        </div>
-      </div>
-
-      <p class="ptz-ai-note">
-        Prototype AI analysis based on the active airport scene and location metadata.
-      </p>
-    </div>
-
-    <!-- MOBILE CAMERA AI -->
-    <div class="camera-ai-card">
-      <div class="ptz-ai-header">
-        <div>
-          <div class="ptz-eyebrow">Mobile Camera AI</div>
-          <h3>Capture and Analyze Scene</h3>
-        </div>
-      </div>
-
-      <div class="camera-upload-box">
-        <input id="cameraCaptureInput" type="file" accept="image/*" capture="environment">
-      </div>
-
-      <div class="camera-preview-box">
-        <img id="capturedScenePreview" alt="Captured scene preview" style="display:none; max-width:100%; border-radius:12px; margin-top:10px;">
-      </div>
-
-      <div class="camera-analyze-actions">
-        <button id="analyzeCapturedSceneBtn" class="ptz-analyze-btn" type="button">Analyze Captured Scene</button>
-      </div>
-
-      <div class="ptz-ai-results">
-        <div class="ptz-ai-row">
-          <span>Captured Scene Type</span>
-          <strong id="capturedSceneType">Not analyzed</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Confidence</span>
-          <strong id="capturedConfidence">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Estimated Crowd Level</span>
-          <strong id="capturedCrowdLevel">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Security Status</span>
-          <strong id="capturedSecurityStatus">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Detected Elements</span>
-          <strong id="capturedDetectedObjects">-</strong>
-        </div>
-
-        <div class="ptz-ai-row">
-          <span>Recommendation</span>
-          <strong id="capturedRecommendation">Capture an image first</strong>
-        </div>
-      </div>
-
-      <p class="ptz-ai-note">
-        Mobile image analysis using a ready-made object detection model.
-      </p>
-    </div>
-  </div>
-
-  <div id="ptzOverlay" class="ptz-overlay" aria-hidden="true"></div>
-
-  <!-- PANO -->
-  <div id="pano"></div>
-
-  <!-- SCENE LIST -->
-  <div id="sceneList">
-    <div class="scene-list-header">
-      <span class="scene-list-title">Explore Locations</span>
-    </div>
-
-    <ul class="scenes">
-      <a href="javascript:void(0)" class="scene" data-id="0-entrance">
-        <li class="text"><span class="scene-icon">📍</span> Entrance</li>
-      </a>
-
-      <a href="javascript:void(0)" class="scene" data-id="1-lobby">
-        <li class="text"><span class="scene-icon">📍</span> Lobby</li>
-      </a>
-
-      <a href="javascript:void(0)" class="scene" data-id="2-ground-floor">
-        <li class="text"><span class="scene-icon">📍</span> Ground floor</li>
-      </a>
-
-      <a href="javascript:void(0)" class="scene" data-id="3-wing-1">
-        <li class="text"><span class="scene-icon">📍</span> Wing 1</li>
-      </a>
-
-      <a href="javascript:void(0)" class="scene" data-id="4-ground-floor-2">
-        <li class="text"><span class="scene-icon">📍</span> Ground floor 2</li>
-      </a>
-    </ul>
-  </div>
-
-  <!-- TITLE -->
-  <div id="titleBar">
-    <h1 class="sceneName"></h1>
-  </div>
-
-  <!-- TOGGLES -->
-  <a href="javascript:void(0)" id="autorotateToggle">
-    <img class="icon off" src="img/play.png">
-    <img class="icon on" src="img/pause.png">
-  </a>
-
-  <a href="javascript:void(0)" id="fullscreenToggle">
-    <img class="icon off" src="img/fullscreen.png">
-    <img class="icon on" src="img/windowed.png">
-  </a>
-
-  <a href="javascript:void(0)" id="sceneListToggle">
-    <img class="icon off" src="img/expand.png">
-    <img class="icon on" src="img/collapse.png">
-  </a>
-
-  <!-- VIEW CONTROLS -->
-  <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
-    <img class="icon" src="img/up.png">
-  </a>
-  <a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
-    <img class="icon" src="img/down.png">
-  </a>
-  <a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
-    <img class="icon" src="img/left.png">
-  </a>
-  <a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
-    <img class="icon" src="img/right.png">
-  </a>
-  <a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
-    <img class="icon" src="img/plus.png">
-  </a>
-  <a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
-    <img class="icon" src="img/minus.png">
-  </a>
-
-  <!-- LIBRARIES -->
-  <script src="vendor/screenfull.min.js"></script>
-  <script src="vendor/bowser.min.js"></script>
-  <script src="vendor/marzipano.js"></script>
-
-  <script src="data.js"></script>
-
-  <!-- TensorFlow + COCO SSD -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-
-  <script src="index.js"></script>
 </body>
 </html>
