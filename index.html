@@ -343,6 +343,17 @@ function openRealCamera() {
     });
 }
 </script>
+    <script>
+function openRealCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      document.getElementById("realCamera").srcObject = stream;
+    })
+    .catch(err => {
+      alert("Camera error: " + err);
+    });
+}
+</script>
   <script src="index.js"></script>
 </body>
 </html>
