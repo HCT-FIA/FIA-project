@@ -790,3 +790,48 @@ a {
     display: none;
   }
 }
+/* === FORCE STYLE (يشتغل على أي صفحة تسجيل دخول) === */
+
+body {
+  margin: 0 !important;
+  font-family: 'Segoe UI', sans-serif !important;
+  background: linear-gradient(135deg, #0a1a2f, #1e3c72) !important;
+}
+
+/* الصندوق في الوسط */
+body > div {
+  backdrop-filter: blur(15px) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  padding: 40px !important;
+  border-radius: 20px !important;
+  width: 320px !important;
+  margin: auto !important;
+  margin-top: 80px !important;
+  color: white !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+}
+
+/* المدخلات */
+input, select {
+  width: 100% !important;
+  padding: 10px !important;
+  margin: 8px 0 !important;
+  border-radius: 10px !important;
+  border: none !important;
+}
+
+/* الزر */
+button {
+  width: 100% !important;
+  padding: 12px !important;
+  margin-top: 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(45deg, #4facfe, #00f2fe) !important;
+  color: white !important;
+  cursor: pointer !important;
+  transition: 0.3s !important;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
