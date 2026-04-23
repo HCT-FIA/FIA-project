@@ -322,5 +322,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
   <script src="index.js"></script>
+  <script>
+window.addEventListener("load", function () {
+  const btn = document.getElementById("openCameraModal");
+
+  if (!btn) {
+    console.log("زر الكاميرا غير موجود");
+    return;
+  }
+
+  btn.onclick = function () {
+    window.open("https://view-fia-live.base44.app/", "_blank");
+  };
+});
+</script>
 </body>
 </html>
