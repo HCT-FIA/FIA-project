@@ -1,8 +1,3 @@
-/*
- * Copyright 2016 Google Inc. All rights reserved.
- * Licensed under the Apache License, Version 2.0
- */
-
 'use strict';
 
 (function() {
@@ -193,11 +188,14 @@
   var capturedScenePreviewElement = document.querySelector('#capturedScenePreview');
   var analyzeCapturedSceneBtnElement = document.querySelector('#analyzeCapturedSceneBtn');
   var capturedSceneTypeElement = document.querySelector('#capturedSceneType');
+  var capturedConfidenceElement = document.querySelector('#capturedConfidence');
   var capturedCrowdLevelElement = document.querySelector('#capturedCrowdLevel');
   var capturedSecurityStatusElement = document.querySelector('#capturedSecurityStatus');
   var capturedDetectedObjectsElement = document.querySelector('#capturedDetectedObjects');
   var capturedRecommendationElement = document.querySelector('#capturedRecommendation');
   var capturedSceneImageLoaded = false;
+
+  var cocoModel = null;
 
   var ptzSweepInterval = null;
   var ptzSweepDirection = 1;
@@ -797,18 +795,76 @@
     reader.readAsDataURL(file);
   }
 
+  async function loadCocoModel() {
+    if (!cocoModel) {
+      cocoModel = await cocoSsd.load();
+    }
+    return cocoModel;
+  }
+
   function setCapturedSceneResults(result) {
     if (capturedSceneTypeElement) capturedSceneTypeElement.textContent = result.sceneType || 'Unknown';
+    if (capturedConfidenceElement) capturedConfidenceElement.textContent = result.confidence || '-';
     if (capturedCrowdLevelElement) capturedCrowdLevelElement.textContent = result.crowdLevel || 'Unknown';
     if (capturedSecurityStatusElement) capturedSecurityStatusElement.textContent = result.securityStatus || 'Unknown';
     if (capturedDetectedObjectsElement) capturedDetectedObjectsElement.textContent = result.detectedObjects || 'Unknown';
     if (capturedRecommendationElement) capturedRecommendationElement.textContent = result.recommendation || 'No recommendation';
   }
 
-  function analyzeCapturedScene() {
-    if (!capturedSceneImageLoaded) {
+  function classifySceneFromObjects(predictions) {
+    var personCount = predictions.filter(function(p) { return p.class === 'person'; }).length;
+    var chairCount = predictions.filter(function(p) { return p.class === 'chair'; }).length;
+    var tableCount = predictions.filter(function(p) { return p.class === 'dining table'; }).length;
+    var suitcaseCount = predictions.filter(function(p) {
+      return p.class === 'suitcase' || p.class === 'backpack' || p.class === 'handbag';
+    }).length;
+    var tvCount = predictions.filter(function(p) {
+      return p.class === 'tv' || p.class === 'monitor';
+    }).length;
+
+    var sceneType = 'General Airport Area';
+    var crowdLevel = 'Low';
+    var securityStatus = 'Normal';
+    var recommendation = 'Continue normal monitoring.';
+
+    if (personCount >= 5) {
+      crowdLevel = 'High';
+    } else if (personCount >= 2) {
+      crowdLevel = 'Medium';
+    }
+
+    if (chairCount >= 4 && tableCount >= 1) {
+      sceneType = 'Restaurant / Waiting Area';
+      recommendation = 'Monitor seating area and visitor flow.';
+    } else if (suitcaseCount >= 1 && personCount >= 1) {
+      sceneType = 'Check-in / Passenger Area';
+      recommendation = 'Monitor passenger movement and baggage flow.';
+    } else if (tvCount >= 1 && personCount >= 1) {
+      sceneType = 'Lobby / Information Area';
+      recommendation = 'Observe service and waiting area activity.';
+    } else if (personCount >= 1 && chairCount === 0 && suitcaseCount === 0) {
+      sceneType = 'Corridor / Movement Area';
+      recommendation = 'Keep movement path clear and monitor traffic.';
+    }
+
+    if (personCount >= 8) {
+      securityStatus = 'Crowded Area';
+      recommendation = 'Monitor crowd density and maintain safe movement.';
+    }
+
+    return {
+      sceneType: sceneType,
+      crowdLevel: crowdLevel,
+      securityStatus: securityStatus,
+      recommendation: recommendation
+    };
+  }
+
+  async function analyzeCapturedScene() {
+    if (!capturedSceneImageLoaded || !capturedScenePreviewElement) {
       setCapturedSceneResults({
         sceneType: 'No image captured',
+        confidence: '-',
         crowdLevel: '-',
         securityStatus: 'Unavailable',
         detectedObjects: '-',
@@ -817,57 +873,83 @@
       return;
     }
 
-    var sceneType = 'Airport Area';
-    var crowdLevel = 'Low';
-    var securityStatus = 'Normal';
-    var detectedObjects = 'airport environment';
-    var recommendation = 'Continue normal observation.';
+    try {
+      setCapturedSceneResults({
+        sceneType: 'Analyzing...',
+        confidence: 'Loading',
+        crowdLevel: 'Loading',
+        securityStatus: 'Loading',
+        detectedObjects: 'Detecting objects',
+        recommendation: 'Please wait...'
+      });
 
-    if (currentScene && currentScene.data) {
-      var sceneName = (currentScene.data.name || '').toLowerCase();
-      var sceneId = currentScene.data.id || '';
+      var model = await loadCocoModel();
+      var predictions = await model.detect(capturedScenePreviewElement);
 
-      if (sceneName.indexOf('entrance') !== -1 || sceneId.indexOf('entrance') !== -1) {
-        sceneType = 'Entrance / Access Point';
-        crowdLevel = 'Medium';
-        securityStatus = 'Observe entry activity';
-        detectedObjects = 'entry area, access zone';
-        recommendation = 'Monitor entry flow and visitor activity.';
-      } else if (sceneName.indexOf('lobby') !== -1 || sceneId.indexOf('lobby') !== -1) {
-        sceneType = 'Lobby / Reception Area';
-        crowdLevel = 'Medium';
-        securityStatus = 'Service area active';
-        detectedObjects = 'reception desk, waiting area';
-        recommendation = 'Keep the reception area under observation.';
-      } else if (sceneName.indexOf('ground') !== -1 || sceneId.indexOf('ground') !== -1) {
-        sceneType = 'Passenger Circulation Zone';
-        crowdLevel = 'High';
-        securityStatus = 'Busy circulation zone';
-        detectedObjects = 'corridor, movement area';
-        recommendation = 'Watch movement and keep the area clear.';
-      } else if (sceneName.indexOf('wing') !== -1 || sceneId.indexOf('wing') !== -1) {
-        sceneType = 'Restricted Services Corridor';
-        crowdLevel = 'Low';
-        securityStatus = 'Restricted area';
-        detectedObjects = 'service corridor';
-        recommendation = 'Check access permissions carefully.';
+      if (!predictions || !predictions.length) {
+        setCapturedSceneResults({
+          sceneType: 'Unknown Scene',
+          confidence: 'Low',
+          crowdLevel: 'Low',
+          securityStatus: 'No major objects detected',
+          detectedObjects: 'No clear objects detected',
+          recommendation: 'Try capturing a clearer image.'
+        });
+        return;
       }
-    }
 
-    setCapturedSceneResults({
-      sceneType: sceneType,
-      crowdLevel: crowdLevel,
-      securityStatus: securityStatus,
-      detectedObjects: detectedObjects,
-      recommendation: recommendation
-    });
+      var filtered = predictions.filter(function(p) {
+        return p.score >= 0.50;
+      });
 
-    if (ptzSceneNoteElement) {
-      ptzSceneNoteElement.textContent = 'Captured mobile image analyzed successfully.';
-    }
+      if (!filtered.length) {
+        setCapturedSceneResults({
+          sceneType: 'Unclear Scene',
+          confidence: 'Low',
+          crowdLevel: 'Low',
+          securityStatus: 'Low confidence detection',
+          detectedObjects: 'Objects not clear enough',
+          recommendation: 'Capture the image again with better lighting.'
+        });
+        return;
+      }
 
-    if (ptzCameraStatusElement) {
-      ptzCameraStatusElement.textContent = 'MOBILE AI';
+      var detectedObjects = filtered.map(function(p) {
+        return p.class + ' (' + Math.round(p.score * 100) + '%)';
+      });
+
+      var avgConfidence = filtered.reduce(function(sum, p) {
+        return sum + p.score;
+      }, 0) / filtered.length;
+
+      var sceneInfo = classifySceneFromObjects(filtered);
+
+      setCapturedSceneResults({
+        sceneType: sceneInfo.sceneType,
+        confidence: Math.round(avgConfidence * 100) + '%',
+        crowdLevel: sceneInfo.crowdLevel,
+        securityStatus: sceneInfo.securityStatus,
+        detectedObjects: detectedObjects.join(', '),
+        recommendation: sceneInfo.recommendation
+      });
+
+      if (ptzSceneNoteElement) {
+        ptzSceneNoteElement.textContent = 'Captured mobile image analyzed using object detection.';
+      }
+
+      if (ptzCameraStatusElement) {
+        ptzCameraStatusElement.textContent = 'MOBILE AI';
+      }
+    } catch (error) {
+      console.error(error);
+      setCapturedSceneResults({
+        sceneType: 'Analysis Error',
+        confidence: '-',
+        crowdLevel: '-',
+        securityStatus: 'Error',
+        detectedObjects: 'Could not process image',
+        recommendation: 'Please try again.'
+      });
     }
   }
 
@@ -880,7 +962,7 @@
     icon.src = 'img/link.png';
     icon.classList.add('link-hotspot-icon');
 
-    var transformProperties = [ '-ms-transform', '-webkit-transform', 'transform' ];
+    var transformProperties = ['-ms-transform', '-webkit-transform', 'transform'];
     for (var i = 0; i < transformProperties.length; i++) {
       var property = transformProperties[i];
       icon.style[property] = 'rotate(' + hotspot.rotation + 'rad)';
@@ -965,7 +1047,7 @@
   }
 
   function stopTouchAndScrollEventPropagation(element) {
-    var eventList = [ 'touchstart', 'touchmove', 'touchend', 'touchcancel', 'wheel', 'mousewheel' ];
+    var eventList = ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'wheel', 'mousewheel'];
     for (var i = 0; i < eventList.length; i++) {
       element.addEventListener(eventList[i], function(event) {
         event.stopPropagation();
