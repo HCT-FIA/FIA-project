@@ -5,8 +5,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
   <style>@-ms-viewport { width: device-width; }</style>
+
   <link rel="stylesheet" href="vendor/reset.min.css">
   <link rel="stylesheet" href="style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -51,13 +53,15 @@
     </div>
   </div>
 
-  <!-- Header Bar -->
+  <!-- Header -->
   <div id="headerBar">
     <div class="logo-section">
       <img src="https://www.fujairah-airport.ae/images/logo.png" alt="FIA Logo" class="fia-logo" onerror="this.style.display='none'">
       <span class="logo-text">Virtual Tour</span>
     </div>
+
     <div class="header-tagline">Your Gateway to the World</div>
+
     <div class="header-actions">
       <button id="ptzCameraBtn" type="button" aria-label="Open PTZ security camera panel">
         <span class="camera-btn-icon">📹</span>
@@ -67,6 +71,7 @@
     </div>
   </div>
 
+  <!-- PTZ PANEL -->
   <div id="ptzCameraPanel" class="ptz-panel" aria-hidden="true">
     <div class="ptz-panel-header">
       <div>
@@ -129,6 +134,7 @@
       <button type="button" class="ptz-preset" data-ptz-preset="secure">Security Sweep</button>
     </div>
 
+    <!-- AI SCENE ANALYSIS -->
     <div class="ptz-ai-card">
       <div class="ptz-ai-header">
         <div>
@@ -170,10 +176,11 @@
       </p>
     </div>
 
+    <!-- MOBILE CAMERA AI -->
     <div class="camera-ai-card">
       <div class="ptz-ai-header">
         <div>
-          <div class="ptz-eyebrow">Mobile Camera</div>
+          <div class="ptz-eyebrow">Mobile Camera AI</div>
           <h3>Capture and Analyze Scene</h3>
         </div>
       </div>
@@ -195,18 +202,27 @@
           <span>Captured Scene Type</span>
           <strong id="capturedSceneType">Not analyzed</strong>
         </div>
+
+        <div class="ptz-ai-row">
+          <span>Confidence</span>
+          <strong id="capturedConfidence">-</strong>
+        </div>
+
         <div class="ptz-ai-row">
           <span>Estimated Crowd Level</span>
           <strong id="capturedCrowdLevel">-</strong>
         </div>
+
         <div class="ptz-ai-row">
           <span>Security Status</span>
           <strong id="capturedSecurityStatus">-</strong>
         </div>
+
         <div class="ptz-ai-row">
           <span>Detected Elements</span>
           <strong id="capturedDetectedObjects">-</strong>
         </div>
+
         <div class="ptz-ai-row">
           <span>Recommendation</span>
           <strong id="capturedRecommendation">Capture an image first</strong>
@@ -214,19 +230,22 @@
       </div>
 
       <p class="ptz-ai-note">
-        Prototype mobile scene analysis using captured image input from the phone camera.
+        Mobile image analysis using a ready-made object detection model.
       </p>
     </div>
   </div>
 
   <div id="ptzOverlay" class="ptz-overlay" aria-hidden="true"></div>
 
+  <!-- PANO -->
   <div id="pano"></div>
 
+  <!-- SCENE LIST -->
   <div id="sceneList">
     <div class="scene-list-header">
       <span class="scene-list-title">Explore Locations</span>
     </div>
+
     <ul class="scenes">
       <a href="javascript:void(0)" class="scene" data-id="0-entrance">
         <li class="text"><span class="scene-icon">📍</span> Entrance</li>
@@ -250,10 +269,12 @@
     </ul>
   </div>
 
+  <!-- TITLE -->
   <div id="titleBar">
     <h1 class="sceneName"></h1>
   </div>
 
+  <!-- TOGGLES -->
   <a href="javascript:void(0)" id="autorotateToggle">
     <img class="icon off" src="img/play.png">
     <img class="icon on" src="img/pause.png">
@@ -269,6 +290,7 @@
     <img class="icon on" src="img/collapse.png">
   </a>
 
+  <!-- VIEW CONTROLS -->
   <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
     <img class="icon" src="img/up.png">
   </a>
@@ -288,11 +310,17 @@
     <img class="icon" src="img/minus.png">
   </a>
 
+  <!-- LIBRARIES -->
   <script src="vendor/screenfull.min.js"></script>
   <script src="vendor/bowser.min.js"></script>
   <script src="vendor/marzipano.js"></script>
 
   <script src="data.js"></script>
+
+  <!-- TensorFlow + COCO SSD -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
   <script src="index.js"></script>
 </body>
 </html>
