@@ -790,3 +790,37 @@ a {
     display: none;
   }
 }
+/* === NEW MODERN UI === */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0a1a2f, #1e3c72);
+}
+
+/* Login Box */
+.login-container {
+  backdrop-filter: blur(15px);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  border-radius: 20px;
+  width: 320px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+/* Button */
+button {
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
