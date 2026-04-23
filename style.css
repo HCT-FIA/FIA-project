@@ -652,7 +652,8 @@ a {
   color: #08111f;
 }
 
-.ptz-ai-card {
+.ptz-ai-card,
+.camera-ai-card {
   margin-top: 18px;
   padding: 16px;
   border-radius: 18px;
@@ -714,16 +715,6 @@ a {
   color: rgba(255,255,255,0.72);
   font-size: 12px;
   line-height: 1.5;
-}
-
-.camera-ai-card {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(10, 18, 34, 0.92);
-  border: 1px solid rgba(104, 194, 255, 0.18);
-  color: #eef5ff;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.22);
 }
 
 .camera-upload-box {
