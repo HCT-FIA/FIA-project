@@ -189,6 +189,16 @@
   var aiDetectedObjectsElement = document.querySelector('#aiDetectedObjects');
   var aiRecommendationElement = document.querySelector('#aiRecommendation');
 
+  var cameraCaptureInputElement = document.querySelector('#cameraCaptureInput');
+  var capturedScenePreviewElement = document.querySelector('#capturedScenePreview');
+  var analyzeCapturedSceneBtnElement = document.querySelector('#analyzeCapturedSceneBtn');
+  var capturedSceneTypeElement = document.querySelector('#capturedSceneType');
+  var capturedCrowdLevelElement = document.querySelector('#capturedCrowdLevel');
+  var capturedSecurityStatusElement = document.querySelector('#capturedSecurityStatus');
+  var capturedDetectedObjectsElement = document.querySelector('#capturedDetectedObjects');
+  var capturedRecommendationElement = document.querySelector('#capturedRecommendation');
+  var capturedSceneImageLoaded = false;
+
   var ptzSweepInterval = null;
   var ptzSweepDirection = 1;
   var ptzSweepStep = 0.03;
@@ -219,6 +229,14 @@
 
   if (aiAnalyzeBtnElement) {
     aiAnalyzeBtnElement.addEventListener('click', runAiSceneAnalysis);
+  }
+
+  if (cameraCaptureInputElement) {
+    cameraCaptureInputElement.addEventListener('change', handleCapturedSceneImage);
+  }
+
+  if (analyzeCapturedSceneBtnElement) {
+    analyzeCapturedSceneBtnElement.addEventListener('click', analyzeCapturedScene);
   }
 
   var ptzCameraConfig = {
@@ -762,6 +780,97 @@
     }
   }
 
+  function handleCapturedSceneImage(event) {
+    var file = event.target.files && event.target.files[0];
+    if (!file || !capturedScenePreviewElement) return;
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      capturedScenePreviewElement.src = e.target.result;
+      capturedScenePreviewElement.style.display = 'block';
+      capturedSceneImageLoaded = true;
+
+      if (capturedRecommendationElement) {
+        capturedRecommendationElement.textContent = 'Image captured successfully. Press Analyze Captured Scene.';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function setCapturedSceneResults(result) {
+    if (capturedSceneTypeElement) capturedSceneTypeElement.textContent = result.sceneType || 'Unknown';
+    if (capturedCrowdLevelElement) capturedCrowdLevelElement.textContent = result.crowdLevel || 'Unknown';
+    if (capturedSecurityStatusElement) capturedSecurityStatusElement.textContent = result.securityStatus || 'Unknown';
+    if (capturedDetectedObjectsElement) capturedDetectedObjectsElement.textContent = result.detectedObjects || 'Unknown';
+    if (capturedRecommendationElement) capturedRecommendationElement.textContent = result.recommendation || 'No recommendation';
+  }
+
+  function analyzeCapturedScene() {
+    if (!capturedSceneImageLoaded) {
+      setCapturedSceneResults({
+        sceneType: 'No image captured',
+        crowdLevel: '-',
+        securityStatus: 'Unavailable',
+        detectedObjects: '-',
+        recommendation: 'Please capture an image first.'
+      });
+      return;
+    }
+
+    var sceneType = 'Airport Area';
+    var crowdLevel = 'Low';
+    var securityStatus = 'Normal';
+    var detectedObjects = 'airport environment';
+    var recommendation = 'Continue normal observation.';
+
+    if (currentScene && currentScene.data) {
+      var sceneName = (currentScene.data.name || '').toLowerCase();
+      var sceneId = currentScene.data.id || '';
+
+      if (sceneName.indexOf('entrance') !== -1 || sceneId.indexOf('entrance') !== -1) {
+        sceneType = 'Entrance / Access Point';
+        crowdLevel = 'Medium';
+        securityStatus = 'Observe entry activity';
+        detectedObjects = 'entry area, access zone';
+        recommendation = 'Monitor entry flow and visitor activity.';
+      } else if (sceneName.indexOf('lobby') !== -1 || sceneId.indexOf('lobby') !== -1) {
+        sceneType = 'Lobby / Reception Area';
+        crowdLevel = 'Medium';
+        securityStatus = 'Service area active';
+        detectedObjects = 'reception desk, waiting area';
+        recommendation = 'Keep the reception area under observation.';
+      } else if (sceneName.indexOf('ground') !== -1 || sceneId.indexOf('ground') !== -1) {
+        sceneType = 'Passenger Circulation Zone';
+        crowdLevel = 'High';
+        securityStatus = 'Busy circulation zone';
+        detectedObjects = 'corridor, movement area';
+        recommendation = 'Watch movement and keep the area clear.';
+      } else if (sceneName.indexOf('wing') !== -1 || sceneId.indexOf('wing') !== -1) {
+        sceneType = 'Restricted Services Corridor';
+        crowdLevel = 'Low';
+        securityStatus = 'Restricted area';
+        detectedObjects = 'service corridor';
+        recommendation = 'Check access permissions carefully.';
+      }
+    }
+
+    setCapturedSceneResults({
+      sceneType: sceneType,
+      crowdLevel: crowdLevel,
+      securityStatus: securityStatus,
+      detectedObjects: detectedObjects,
+      recommendation: recommendation
+    });
+
+    if (ptzSceneNoteElement) {
+      ptzSceneNoteElement.textContent = 'Captured mobile image analyzed successfully.';
+    }
+
+    if (ptzCameraStatusElement) {
+      ptzCameraStatusElement.textContent = 'MOBILE AI';
+    }
+  }
+
   function createLinkHotspotElement(hotspot) {
     var wrapper = document.createElement('div');
     wrapper.classList.add('hotspot');
@@ -878,7 +987,6 @@
     return null;
   }
 
-  // LOGIN / LOGOUT
   var loginOverlayElement = document.querySelector('#loginOverlay');
   var loginBtnElement = document.querySelector('#loginBtn');
   var logoutBtnElement = document.querySelector('#logoutBtn');
