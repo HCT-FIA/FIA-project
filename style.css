@@ -7,6 +7,16 @@
   color: #ffffff;
   overflow: hidden;
 }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+  url("https://images.unsplash.com/photo-1542296332-2e4473faf563?auto=format&fit=crop&w=1920&q=80");
+
+  background-size: cover;
+  background-position: center;
+}
 
 a {
   text-decoration: none;
