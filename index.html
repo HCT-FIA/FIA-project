@@ -81,6 +81,7 @@
         <span class="ptz-live-dot"></span>
         <span>Live Monitoring Simulation</span>
       </div>
+
       <div class="ptz-screen">
         <div class="ptz-grid"></div>
         <div class="ptz-reticle"></div>
@@ -88,10 +89,12 @@
         <div class="ptz-corner ptz-corner-tr"></div>
         <div class="ptz-corner ptz-corner-bl"></div>
         <div class="ptz-corner ptz-corner-br"></div>
+
         <div class="ptz-screen-label">Fujairah International Airport</div>
         <div class="ptz-status-chip" id="ptzCameraStatus">ACTIVE</div>
         <div class="ptz-camera-id" id="ptzCameraId">CAM-ENT-01</div>
         <div class="ptz-location" id="ptzCameraLocation">Entrance Surveillance Zone</div>
+
         <div class="ptz-meta">
           <span id="ptzDirection">Direction: North Gate</span>
           <span id="ptzZoom">Zoom: 1.0x</span>
@@ -99,15 +102,19 @@
       </div>
     </div>
 
-    <div class="ptz-scene-note" id="ptzSceneNote">Monitoring the current scene with pan, tilt, and zoom controls.</div>
+    <div class="ptz-scene-note" id="ptzSceneNote">
+      Monitoring the current scene with pan, tilt, and zoom controls.
+    </div>
 
     <div class="ptz-controls-grid">
       <button type="button" class="ptz-control" data-ptz-action="up">Tilt +</button>
+
       <div class="ptz-row">
         <button type="button" class="ptz-control" data-ptz-action="left">Pan ←</button>
         <button type="button" class="ptz-control ptz-center" data-ptz-action="center">Center</button>
         <button type="button" class="ptz-control" data-ptz-action="right">Pan →</button>
       </div>
+
       <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
     </div>
 
@@ -122,48 +129,94 @@
       <button type="button" class="ptz-preset" data-ptz-preset="secure">Security Sweep</button>
     </div>
 
-
     <div class="ptz-ai-card">
-  <div class="ptz-ai-header">
-    <div>
-      <div class="ptz-eyebrow">AI Prototype</div>
-      <h3>AI Scene Analysis</h3>
-    </div>
-    <button id="aiAnalyzeBtn" class="ptz-analyze-btn" type="button">Analyze Scene</button>
-  </div>
+      <div class="ptz-ai-header">
+        <div>
+          <div class="ptz-eyebrow">AI Prototype</div>
+          <h3>AI Scene Analysis</h3>
+        </div>
+        <button id="aiAnalyzeBtn" class="ptz-analyze-btn" type="button">Analyze Scene</button>
+      </div>
 
-  <div class="ptz-ai-results">
-    <div class="ptz-ai-row">
-      <span>Detected Area</span>
-      <strong id="aiAreaType">Not analyzed</strong>
+      <div class="ptz-ai-results">
+        <div class="ptz-ai-row">
+          <span>Detected Area</span>
+          <strong id="aiAreaType">Not analyzed</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Crowd Level</span>
+          <strong id="aiCrowdLevel">-</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Security Status</span>
+          <strong id="aiSecurityStatus">-</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Detected Objects</span>
+          <strong id="aiDetectedObjects">-</strong>
+        </div>
+
+        <div class="ptz-ai-row">
+          <span>Recommendation</span>
+          <strong id="aiRecommendation">Press Analyze Scene</strong>
+        </div>
+      </div>
+
+      <p class="ptz-ai-note">
+        Prototype AI analysis based on the active airport scene and location metadata.
+      </p>
     </div>
 
-    <div class="ptz-ai-row">
-      <span>Crowd Level</span>
-      <strong id="aiCrowdLevel">-</strong>
-    </div>
+    <div class="camera-ai-card">
+      <div class="ptz-ai-header">
+        <div>
+          <div class="ptz-eyebrow">Mobile Camera</div>
+          <h3>Capture and Analyze Scene</h3>
+        </div>
+      </div>
 
-    <div class="ptz-ai-row">
-      <span>Security Status</span>
-      <strong id="aiSecurityStatus">-</strong>
-    </div>
+      <div class="camera-upload-box">
+        <input id="cameraCaptureInput" type="file" accept="image/*" capture="environment">
+      </div>
 
-    <div class="ptz-ai-row">
-      <span>Detected Objects</span>
-      <strong id="aiDetectedObjects">-</strong>
-    </div>
+      <div class="camera-preview-box">
+        <img id="capturedScenePreview" alt="Captured scene preview" style="display:none; max-width:100%; border-radius:12px; margin-top:10px;">
+      </div>
 
-    <div class="ptz-ai-row">
-      <span>Recommendation</span>
-      <strong id="aiRecommendation">Press Analyze Scene</strong>
-    </div>
-  </div>
+      <div class="camera-analyze-actions">
+        <button id="analyzeCapturedSceneBtn" class="ptz-analyze-btn" type="button">Analyze Captured Scene</button>
+      </div>
 
-  <p class="ptz-ai-note">
-    Prototype AI analysis based on the active airport scene and location metadata.
-  </p>
-</div>
-    
+      <div class="ptz-ai-results">
+        <div class="ptz-ai-row">
+          <span>Captured Scene Type</span>
+          <strong id="capturedSceneType">Not analyzed</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Estimated Crowd Level</span>
+          <strong id="capturedCrowdLevel">-</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Security Status</span>
+          <strong id="capturedSecurityStatus">-</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Detected Elements</span>
+          <strong id="capturedDetectedObjects">-</strong>
+        </div>
+        <div class="ptz-ai-row">
+          <span>Recommendation</span>
+          <strong id="capturedRecommendation">Capture an image first</strong>
+        </div>
+      </div>
+
+      <p class="ptz-ai-note">
+        Prototype mobile scene analysis using captured image input from the phone camera.
+      </p>
+    </div>
   </div>
 
   <div id="ptzOverlay" class="ptz-overlay" aria-hidden="true"></div>
