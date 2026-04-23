@@ -6,638 +6,83 @@
   <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
   <style>@-ms-viewport { width: device-width; }</style>
 
-  <link rel="stylesheet" href__="vendor/reset.min.css">
-  <link rel="stylesheet" href__="style.css">
+  <!-- FIXED -->
+  <link rel="stylesheet" href="vendor/reset.min.css">
+  <link rel="stylesheet" href="style.css">
 
-  <link rel="preconnect" href__="https://fonts.googleapis.com">
-  <link rel="preconnect" href__="https://fonts.gstatic.com" crossorigin>
-  <link href__="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    /* ── Live Camera Feature ── */
-    .live-camera-card {
-      background: #0d1f3c;
-      border: 1px solid rgba(59,130,246,0.25);
-      border-radius: 16px;
-      padding: 20px;
-      margin-top: 16px;
-    }
-    .live-camera-card .ptz-eyebrow { color: #60a5fa; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-    .live-camera-card h3 { color: #fff; font-size: 15px; font-weight: 600; margin: 4px 0 14px; }
-
-    .live-cam-toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .live-cam-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #94a3b8;
-      font-family: monospace;
-    }
-    .live-cam-status .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #475569;
-    }
-    .live-cam-status.active .dot {
-      background: #ef4444;
-      animation: pulse 1.2s infinite;
-    }
-    .live-cam-status.active { color: #f87171; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-    .live-cam-btn {
-      padding: 8px 18px;
-      border-radius: 10px;
-      border: none;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
-    }
-    .live-cam-btn.start { background: #16a34a; color: #fff; }
-    .live-cam-btn.start:hover { background: #15803d; }
-    .live-cam-btn.stop  { background: #dc2626; color: #fff; }
-    .live-cam-btn.stop:hover  { background: #b91c1c; }
-
-    .live-cam-video-wrapper {
-      position: relative;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      aspect-ratio: 16/9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(59,130,246,0.2);
-      margin-bottom: 14px;
-    }
-    .live-cam-video-wrapper video {
-      width: 100%; height: 100%; object-fit: cover;
-    }
-    .live-cam-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: #334155;
-      font-size: 13px;
-    }
-    .live-cam-placeholder svg { opacity: 0.4; }
-
-    /* HUD overlay */
-    .live-cam-hud {
-      position: absolute; inset: 0;
-      pointer-events: none;
-    }
-    .hud-label {
-      position: absolute; top: 10px; left: 10px;
-      background: rgba(0,0,0,0.55);
-      color: #4ade80;
-      font-family: monospace;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 5px;
-    }
-    .hud-status {
-      position: absolute; top: 10px; right: 10px;
-      background: rgba(0,0,0,0.55);
-      color: #4ade80;
-      font-family: monospace;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 5px;
-    }
-    .hud-corner { position: absolute; width: 18px; height: 18px; border-color: rgba(96,165,250,0.7); border-style: solid; }
-    .hud-corner.tl { top: 28px; left: 28px; border-width: 2px 0 0 2px; }
-    .hud-corner.tr { top: 28px; right: 28px; border-width: 2px 2px 0 0; }
-    .hud-corner.bl { bottom: 28px; left: 28px; border-width: 0 0 2px 2px; }
-    .hud-corner.br { bottom: 28px; right: 28px; border-width: 0 2px 2px 0; }
-
-    .live-cam-analyze-btn {
-      width: 100%;
-      padding: 10px;
-      background: #0e7490;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 14px;
-      transition: background 0.2s;
-    }
-    .live-cam-analyze-btn:hover:not(:disabled) { background: #0c6280; }
-    .live-cam-analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .live-cam-error {
-      background: rgba(239,68,68,0.1);
-      border: 1px solid rgba(239,68,68,0.3);
-      color: #f87171;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="multiple-scenes view-control-buttons">
 
-  <!-- LOGIN SCREEN -->
-  <div id="loginOverlay" class="login-overlay">
-    <div class="login-card">
-      <div class="login-header">
-        <h1>Fujairah International Airport</h1>
-        <p>Smart Virtual Tour Access</p>
-      </div>
+<body>
 
-      <div class="login-role-box">
-        <label for="roleSelect">Select Role</label>
-        <select id="roleSelect">
-          <option value="passenger">Passenger</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
+<!-- HEADER -->
+<div id="headerBar">
+  <button id="ptzCameraBtn">📹 PTZ Camera</button>
+</div>
 
-      <div class="login-input-box">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter username">
-      </div>
+<!-- PTZ PANEL -->
+<div id="ptzCameraPanel">
 
-      <div class="login-input-box">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter password">
-      </div>
+  <!-- LIVE CAMERA -->
+  <div class="live-camera-card">
+    <h3>Real-Time Camera Feed</h3>
 
-      <button id="loginBtn" class="login-btn" type="button">Login</button>
+    <button id="liveCamToggleBtn">📷 Turn On Camera</button>
 
-      <p id="loginError" class="login-error"></p>
+    <video id="liveCamVideo" autoplay muted playsinline style="width:100%; display:none;"></video>
 
-      <div class="login-demo-box">
-        <p><strong>Demo Accounts:</strong></p>
-        <p>Passenger: <span>passenger</span> / <span>passenger123</span></p>
-        <p>Admin: <span>admin</span> / <span>admin123</span></p>
-      </div>
-    </div>
-  </div>
+    <button id="liveCamAnalyzeBtn" disabled>🔍 Analyze Scene</button>
 
-  <!-- Header -->
-  <div id="headerBar">
-    <div class="logo-section">
-      <img src="https://www.fujairah-airport.ae/images/logo.png" alt="FIA Logo" class="fia-logo" onerror="this.style.display='none'">
-      <span class="logo-text">Virtual Tour</span>
-    </div>
-
-    <div class="header-tagline">Your Gateway to the World</div>
-
-    <div class="header-actions">
-      <button id="ptzCameraBtn" type="button" aria-label="Open PTZ security camera panel">
-        <span class="camera-btn-icon">📹</span>
-        <span class="camera-btn-text">PTZ Camera</span>
-      </button>
-      <button id="logoutBtn" type="button" class="logout-btn">Logout</button>
-    </div>
-  </div>
-
-  <!-- PTZ PANEL -->
-  <div id="ptzCameraPanel" class="ptz-panel" aria-hidden="true">
-    <div class="ptz-panel-header">
-      <div>
-        <div class="ptz-eyebrow">Security Monitoring</div>
-        <h2>PTZ Security Camera</h2>
-      </div>
-      <button id="ptzCloseBtn" class="ptz-close" type="button" aria-label="Close PTZ security camera panel">×</button>
-    </div>
-
-    <div class="ptz-live-card">
-      <div class="ptz-live-top">
-        <span class="ptz-live-dot"></span>
-        <span>Live Monitoring Simulation</span>
-      </div>
-
-      <div class="ptz-screen">
-        <div class="ptz-grid"></div>
-        <div class="ptz-reticle"></div>
-        <div class="ptz-corner ptz-corner-tl"></div>
-        <div class="ptz-corner ptz-corner-tr"></div>
-        <div class="ptz-corner ptz-corner-bl"></div>
-        <div class="ptz-corner ptz-corner-br"></div>
-
-        <div class="ptz-screen-label">Fujairah International Airport</div>
-        <div class="ptz-status-chip" id="ptzCameraStatus">ACTIVE</div>
-        <div class="ptz-camera-id" id="ptzCameraId">CAM-ENT-01</div>
-        <div class="ptz-location" id="ptzCameraLocation">Entrance Surveillance Zone</div>
-
-        <div class="ptz-meta">
-          <span id="ptzDirection">Direction: North Gate</span>
-          <span id="ptzZoom">Zoom: 1.0x</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ptz-scene-note" id="ptzSceneNote">
-      Monitoring the current scene with pan, tilt, and zoom controls.
-    </div>
-
-    <div class="ptz-controls-grid">
-      <button type="button" class="ptz-control" data-ptz-action="up">Tilt +</button>
-
-      <div class="ptz-row">
-        <button type="button" class="ptz-control" data-ptz-action="left">Pan ←</button>
-        <button type="button" class="ptz-control ptz-center" data-ptz-action="center">Center</button>
-        <button type="button" class="ptz-control" data-ptz-action="right">Pan →</button>
-      </div>
-
-      <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
-    </div>
-
-    <div class="ptz-zoom-row">
-      <button type="button" class="ptz-control" data-ptz-action="zoomIn">Zoom In</button>
-      <button type="button" class="ptz-control" data-ptz-action="zoomOut">Zoom Out</button>
-    </div>
-
-    <div class="ptz-presets">
-      <button type="button" class="ptz-preset" data-ptz-preset="wide">Wide View</button>
-      <button type="button" class="ptz-preset" data-ptz-preset="focus">Focus Gate</button>
-      <button type="button" class="ptz-preset" data-ptz-preset="secure">Security Sweep</button>
-    </div>
-
-    <!-- AI SCENE ANALYSIS -->
-    <div class="ptz-ai-card">
-      <div class="ptz-ai-header">
-        <div>
-          <div class="ptz-eyebrow">AI Prototype</div>
-          <h3>AI Scene Analysis</h3>
-        </div>
-        <button id="aiAnalyzeBtn" class="ptz-analyze-btn" type="button">Analyze Scene</button>
-      </div>
-
-      <div class="ptz-ai-results">
-        <div class="ptz-ai-row">
-          <span>Detected Area</span>
-          <strong id="aiAreaType">Not analyzed</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Crowd Level</span>
-          <strong id="aiCrowdLevel">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Security Status</span>
-          <strong id="aiSecurityStatus">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Detected Objects</span>
-          <strong id="aiDetectedObjects">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Recommendation</span>
-          <strong id="aiRecommendation">Press Analyze Scene</strong>
-        </div>
-      </div>
-
-      <p class="ptz-ai-note">
-        Prototype AI analysis based on the active airport scene and location metadata.
-      </p>
-    </div>
-
-    <!-- MOBILE CAMERA AI -->
-    <div class="camera-ai-card">
-      <div class="ptz-ai-header">
-        <div>
-          <div class="ptz-eyebrow">Mobile Camera AI</div>
-          <h3>Capture and Analyze Scene</h3>
-        </div>
-      </div>
-
-      <div class="camera-upload-box">
-        <input id="cameraCaptureInput" type="file" accept="image/*" capture="environment">
-      </div>
-
-      <div class="camera-preview-box">
-        <img id="capturedScenePreview" alt="Captured scene preview" style="display:none; max-width:100%; border-radius:12px; margin-top:10px;">
-      </div>
-
-      <div class="camera-analyze-actions">
-        <button id="analyzeCapturedSceneBtn" class="ptz-analyze-btn" type="button">Analyze Captured Scene</button>
-      </div>
-
-      <div class="ptz-ai-results">
-        <div class="ptz-ai-row">
-          <span>Captured Scene Type</span>
-          <strong id="capturedSceneType">Not analyzed</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Confidence</span>
-          <strong id="capturedConfidence">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Estimated Crowd Level</span>
-          <strong id="capturedCrowdLevel">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Security Status</span>
-          <strong id="capturedSecurityStatus">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Detected Elements</span>
-          <strong id="capturedDetectedObjects">-</strong>
-        </div>
-        <div class="ptz-ai-row">
-          <span>Recommendation</span>
-          <strong id="capturedRecommendation">Capture an image first</strong>
-        </div>
-      </div>
-
-      <p class="ptz-ai-note">
-        Mobile image analysis using a ready-made object detection model.
-      </p>
-    </div>
-
-    <!-- ══════════════════════════════════════════ -->
-    <!-- LIVE DEVICE CAMERA SECTION (NEW FEATURE)  -->
-    <!-- ══════════════════════════════════════════ -->
-    <div class="live-camera-card">
-      <div class="ptz-eyebrow">Live Device Camera</div>
-      <h3>Real-Time Camera Feed</h3>
-
-      <!-- Toggle Button -->
-      <div class="live-cam-toggle-row">
-        <div class="live-cam-status" id="liveCamStatus">
-          <span class="dot"></span>
-          <span id="liveCamStatusText">Camera Off</span>
-        </div>
-        <button id="liveCamToggleBtn" class="live-cam-btn start" type="button">
-          📷 Turn On Camera
-        </button>
-      </div>
-
-      <!-- Error -->
-      <div id="liveCamError" class="live-cam-error" style="display:none;"></div>
-
-      <!-- Video -->
-      <div class="live-cam-video-wrapper">
-        <video id="liveCamVideo" autoplay muted playsinline style="display:none;"></video>
-        <canvas id="liveCamCanvas" style="display:none;"></canvas>
-        <div class="live-cam-placeholder" id="liveCamPlaceholder">
-          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>
-          </svg>
-          <span>Camera inactive</span>
-        </div>
-        <!-- HUD shown when live -->
-        <div class="live-cam-hud" id="liveCamHud" style="display:none;">
-          <div class="hud-label">CAM-LIVE-01</div>
-          <div class="hud-status" id="liveCamHudStatus">MONITORING</div>
-          <div class="hud-corner tl"></div>
-          <div class="hud-corner tr"></div>
-          <div class="hud-corner bl"></div>
-          <div class="hud-corner br"></div>
-        </div>
-      </div>
-
-      <!-- Analyze Button -->
-      <button id="liveCamAnalyzeBtn" class="live-cam-analyze-btn" type="button" disabled>
-        🔍 Analyze Scene
-      </button>
-
-      <!-- Results -->
-      <div class="ptz-ai-results">
-        <div class="ptz-ai-row"><span>Scene Description</span><strong id="liveCamScene">-</strong></div>
-        <div class="ptz-ai-row"><span>Crowd Level</span><strong id="liveCamCrowd">-</strong></div>
-        <div class="ptz-ai-row"><span>Security Status</span><strong id="liveCamSecurity">-</strong></div>
-        <div class="ptz-ai-row"><span>Detected Objects</span><strong id="liveCamObjects">-</strong></div>
-        <div class="ptz-ai-row"><span>Recommendation</span><strong id="liveCamRecommendation">Turn on camera first</strong></div>
-      </div>
-
-      <p class="ptz-ai-note">
-        Uses your device camera for real-time AI security analysis. No video is stored.
-      </p>
-    </div>
-    <!-- ══════════════════════════════════════════ -->
+    <p id="liveCamScene">-</p>
+    <p id="liveCamCrowd">-</p>
+    <p id="liveCamSecurity">-</p>
+    <p id="liveCamObjects">-</p>
+    <p id="liveCamRecommendation">Turn on camera first</p>
 
   </div>
 
-  <div id="ptzOverlay" class="ptz-overlay" aria-hidden="true"></div>
+</div>
 
-  <!-- PANO -->
-  <div id="pano"></div>
+<!-- SCENES -->
+<a href="javascript:void(0)">Scene 1</a>
+<a href="javascript:void(0)">Scene 2</a>
 
-  <!-- SCENE LIST -->
-  <div id="sceneList">
-    <div class="scene-list-header">
-      <span class="scene-list-title">Explore Locations</span>
-    </div>
+<!-- LIBRARIES -->
+<script src="vendor/marzipano.js"></script>
+<script src="index.js"></script>
 
-    <ul class="scenes">
-      <a href__="javascript:void(0)" class="scene" data-id="0-entrance">
-        <li class="text"><span class="scene-icon">📍</span> Entrance</li>
-      </a>
-      <a href__="javascript:void(0)" class="scene" data-id="1-lobby">
-        <li class="text"><span class="scene-icon">📍</span> Lobby</li>
-      </a>
-      <a href__="javascript:void(0)" class="scene" data-id="2-ground-floor">
-        <li class="text"><span class="scene-icon">📍</span> Ground floor</li>
-      </a>
-      <a href__="javascript:void(0)" class="scene" data-id="3-wing-1">
-        <li class="text"><span class="scene-icon">📍</span> Wing 1</li>
-      </a>
-      <a href__="javascript:void(0)" class="scene" data-id="4-ground-floor-2">
-        <li class="text"><span class="scene-icon">📍</span> Ground floor 2</li>
-      </a>
-    </ul>
-  </div>
+<!-- CAMERA SCRIPT -->
+<script>
+let video = document.getElementById("liveCamVideo");
+let btn = document.getElementById("liveCamToggleBtn");
+let analyze = document.getElementById("liveCamAnalyzeBtn");
 
-  <!-- TITLE -->
-  <div id="titleBar">
-    <h1 class="sceneName"></h1>
-  </div>
+let stream = null;
+let isOn = false;
 
-  <!-- TOGGLES -->
-  <a href__="javascript:void(0)" id="autorotateToggle">
-    <img class="icon off" src="img/play.png">
-    <img class="icon on" src="img/pause.png">
-  </a>
-
-  <a href__="javascript:void(0)" id="fullscreenToggle">
-    <img class="icon off" src="img/fullscreen.png">
-    <img class="icon on" src="img/windowed.png">
-  </a>
-
-  <a href__="javascript:void(0)" id="sceneListToggle">
-    <img class="icon off" src="img/expand.png">
-    <img class="icon on" src="img/collapse.png">
-  </a>
-
-  <!-- VIEW CONTROLS -->
-  <a href__="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
-    <img class="icon" src="img/up.png">
-  </a>
-  <a href__="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
-    <img class="icon" src="img/down.png">
-  </a>
-  <a href__="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
-    <img class="icon" src="img/left.png">
-  </a>
-  <a href__="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
-    <img class="icon" src="img/right.png">
-  </a>
-  <a href__="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
-    <img class="icon" src="img/plus.png">
-  </a>
-  <a href__="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
-    <img class="icon" src="img/minus.png">
-  </a>
-
-  <!-- LIBRARIES -->
-  <script src="vendor/screenfull.min.js"></script>
-  <script src="vendor/bowser.min.js"></script>
-  <script src="vendor/marzipano.js"></script>
-
-  <script src="data.js"></script>
-
-  <!-- TensorFlow + COCO SSD -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-
-  <script src="index.js"></script>
-
-  <!-- ══════════════════════════════════════════ -->
-  <!-- LIVE CAMERA JAVASCRIPT (NEW FEATURE)       -->
-  <!-- ══════════════════════════════════════════ -->
-  <script>
-  (function () {
-    var video      = document.getElementById('liveCamVideo');
-    var canvas     = document.getElementById('liveCamCanvas');
-    var placeholder = document.getElementById('liveCamPlaceholder');
-    var hud        = document.getElementById('liveCamHud');
-    var hudStatus  = document.getElementById('liveCamHudStatus');
-    var toggleBtn  = document.getElementById('liveCamToggleBtn');
-    var analyzeBtn = document.getElementById('liveCamAnalyzeBtn');
-    var statusEl   = document.getElementById('liveCamStatus');
-    var statusText = document.getElementById('liveCamStatusText');
-    var errorEl    = document.getElementById('liveCamError');
-
-    var resultScene  = document.getElementById('liveCamScene');
-    var resultCrowd  = document.getElementById('liveCamCrowd');
-    var resultSec    = document.getElementById('liveCamSecurity');
-    var resultObj    = document.getElementById('liveCamObjects');
-    var resultRec    = document.getElementById('liveCamRecommendation');
-
-    var stream = null;
-    var isLive = false;
-
-    // ── Toggle camera on/off ──
-    toggleBtn.addEventListener('click', function () {
-      if (!isLive) { startCamera(); } else { stopCamera(); }
-    });
-
-    function startCamera() {
-      errorEl.style.display = 'none';
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
-        .then(function (s) {
-          stream = s;
-          video.srcObject = s;
-          video.style.display = 'block';
-          placeholder.style.display = 'none';
-          hud.style.display = 'block';
-          isLive = true;
-
-          toggleBtn.textContent = '🚫 Turn Off Camera';
-          toggleBtn.className = 'live-cam-btn stop';
-          statusEl.className = 'live-cam-status active';
-          statusText.textContent = 'LIVE';
-          analyzeBtn.disabled = false;
-          resultRec.textContent = 'Click Analyze Scene to start';
-        })
-        .catch(function (err) {
-          errorEl.textContent = '⚠ Camera access denied or unavailable: ' + err.message;
-          errorEl.style.display = 'block';
-        });
+btn.onclick = async function() {
+  if (!isOn) {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      video.style.display = "block";
+      btn.innerText = "🚫 Turn Off Camera";
+      analyze.disabled = false;
+      isOn = true;
+    } catch (e) {
+      alert("Camera not working: " + e.message);
     }
-
-    function stopCamera() {
-      if (stream) {
-        stream.getTracks().forEach(function (t) { t.stop(); });
-        stream = null;
-      }
-      video.srcObject = null;
-      video.style.display = 'none';
-      placeholder.style.display = 'flex';
-      hud.style.display = 'none';
-      isLive = false;
-
-      toggleBtn.textContent = '📷 Turn On Camera';
-      toggleBtn.className = 'live-cam-btn start';
-      statusEl.className = 'live-cam-status';
-      statusText.textContent = 'Camera Off';
-      analyzeBtn.disabled = true;
-
-      // Reset results
-      resultScene.textContent = '-';
-      resultCrowd.textContent = '-';
-      resultSec.textContent   = '-';
-      resultObj.textContent   = '-';
-      resultRec.textContent   = 'Turn on camera first';
-      hudStatus.textContent   = 'MONITORING';
-    }
-
-    // ── Analyze current frame using COCO-SSD (local, no API key needed) ──
-    analyzeBtn.addEventListener('click', function () {
-      if (!isLive) return;
-      analyzeBtn.disabled = true;
-      analyzeBtn.textContent = '⏳ Analyzing...';
-      hudStatus.textContent  = 'SCANNING';
-
-      // Draw current video frame to canvas
-      canvas.width  = video.videoWidth  || 640;
-      canvas.height = video.videoHeight || 480;
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Run COCO-SSD detection
-      cocoSsd.load().then(function (model) {
-        return model.detect(canvas);
-      }).then(function (predictions) {
-        var labels = predictions.map(function (p) {
-          return p.class + ' (' + Math.round(p.score * 100) + '%)';
-        });
-
-        var personCount = predictions.filter(function (p) { return p.class === 'person'; }).length;
-        var crowd = personCount === 0 ? 'Low' : personCount <= 2 ? 'Moderate' : personCount <= 5 ? 'High' : 'Critical';
-        var secStatus = personCount > 5 ? 'Alert' : 'Clear';
-        var rec = personCount > 5
-          ? 'High crowd detected — increase surveillance.'
-          : 'Scene appears normal. Continue monitoring.';
-
-        resultScene.textContent = labels.length > 0 ? 'Active scene detected' : 'No objects detected';
-        resultCrowd.textContent = crowd;
-        resultSec.textContent   = secStatus;
-        resultObj.textContent   = labels.length > 0 ? labels.join(', ') : 'None';
-        resultRec.textContent   = rec;
-        hudStatus.textContent   = secStatus.toUpperCase();
-
-        analyzeBtn.disabled     = false;
-        analyzeBtn.textContent  = '🔍 Analyze Scene';
-      }).catch(function (err) {
-        errorEl.textContent    = '⚠ Analysis failed: ' + err.message;
-        errorEl.style.display  = 'block';
-        analyzeBtn.disabled    = false;
-        analyzeBtn.textContent = '🔍 Analyze Scene';
-        hudStatus.textContent  = 'ERROR';
-      });
-    });
-  })();
-  </script>
-  <!-- ══════════════════════════════════════════ -->
+  } else {
+    stream.getTracks().forEach(t => t.stop());
+    video.style.display = "none";
+    btn.innerText = "📷 Turn On Camera";
+    analyze.disabled = true;
+    isOn = false;
+  }
+};
+</script>
 
 </body>
 </html>
