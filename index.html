@@ -106,12 +106,6 @@
         </div>
       </div>
     </div>
-        <div class="ptz-live-card">
-      <div class="ptz-live-top">
-        <span class="ptz-live-dot"></span>
-        <span>Live Monitoring Simulation</span>
-      </div>
-
 
     <div class="ptz-scene-note" id="ptzSceneNote">
       Monitoring the current scene with pan, tilt, and zoom controls.
@@ -128,10 +122,6 @@
 
       <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
     </div>
-          <div class="real-camera-inside">
-  <video id="realCamera" autoplay playsinline></video>
-  <button onclick="openRealCamera()">Start Real Camera</button>
-</div>
 
     <div class="ptz-zoom-row">
       <button type="button" class="ptz-control" data-ptz-action="zoomIn">Zoom In</button>
@@ -330,21 +320,6 @@
   <!-- TensorFlow + COCO SSD -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-<!-- REAL LIVE CAMERA -->
-<div class="real-camera-box">
-  <video id="realCamera" autoplay playsinline></video>
-  <button onclick="openRealCamera()">Open Live Camera</button>
-</div>
-
-<script>
-function openRealCamera() {
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-      document.getElementById("realCamera").srcObject = stream;
-    })
-    .catch(err => alert("Camera error: " + err));
-}
-</script>
 
   <script src="index.js"></script>
 </body>
