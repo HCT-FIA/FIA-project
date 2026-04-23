@@ -794,4 +794,20 @@ a {
   border-radius: 10px;
   margin-top: 20px;
 }
+
+  .real-camera-inside {
+  margin-top: 15px;
+  text-align: center;
+}
+
+#realCamera {
+  width: 100%;
+  max-width: 250px;
+  border-radius: 10px;
+}
+
+.real-camera-inside button {
+  margin-top: 8px;
+  padding: 6px;
+}
 }
