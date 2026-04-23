@@ -62,11 +62,17 @@
 
     <div class="header-tagline">Your Gateway to the World</div>
 
+    <!-- ⭐️ أضفنا زر الكاميرا هنا -->
     <div class="header-actions">
       <button id="ptzCameraBtn" type="button" aria-label="Open PTZ security camera panel">
         <span class="camera-btn-icon">📹</span>
         <span class="camera-btn-text">PTZ Camera</span>
       </button>
+
+      <button id="openCameraModal" type="button">
+        📷 Camera
+      </button>
+
       <button id="logoutBtn" type="button" class="logout-btn">Logout</button>
     </div>
   </div>
@@ -321,6 +327,41 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
+  <!-- ⭐️ كود الكاميرا -->
+  <script>
+    const openBtn = document.getElementById("openCameraModal");
+    const modal = document.getElementById("cameraModal");
+    const closeBtn = document.getElementById("closeCameraModal");
+    const video = document.getElementById("modalCamera");
+    let stream;
+
+    openBtn.onclick = async () => {
+      modal.style.display = "flex";
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (err) {
+        alert("Camera error: " + err);
+      }
+    };
+
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  </script>
+
   <script src="index.js"></script>
+
+  <!-- ⭐️ نافذة الكاميرا -->
+  <div id="cameraModal" class="camera-modal">
+    <div class="camera-content">
+      <span id="closeCameraModal" class="close-btn">&times;</span>
+      <video id="modalCamera" autoplay playsinline></video>
+    </div>
+  </div>
+
 </body>
 </html>
