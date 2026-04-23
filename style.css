@@ -789,4 +789,9 @@ a {
   .viewControlButton-6 {
     display: none;
   }
+  #camera {
+  width: 300px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
 }
