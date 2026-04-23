@@ -320,7 +320,23 @@
   <!-- TensorFlow + COCO SSD -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<!-- REAL LIVE CAMERA -->
+<div class="real-camera-box">
+  <video id="realCamera" autoplay playsinline></video>
+  <button onclick="openRealCamera()">Open Live Camera</button>
+</div>
 
+<script>
+function openRealCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function(stream) {
+      document.getElementById("realCamera").srcObject = stream;
+    })
+    .catch(function(err) {
+      alert("Camera error: " + err);
+    });
+}
+</script>
   <script src="index.js"></script>
 </body>
 </html>
