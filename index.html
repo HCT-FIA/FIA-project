@@ -128,6 +128,10 @@
 
       <button type="button" class="ptz-control" data-ptz-action="down">Tilt −</button>
     </div>
+          <div class="real-camera-inside">
+  <video id="realCamera" autoplay playsinline></video>
+  <button onclick="openRealCamera()">Start Real Camera</button>
+</div>
 
     <div class="ptz-zoom-row">
       <button type="button" class="ptz-control" data-ptz-action="zoomIn">Zoom In</button>
@@ -335,25 +339,13 @@
 <script>
 function openRealCamera() {
   navigator.mediaDevices.getUserMedia({ video: true })
-    .then(function(stream) {
-      document.getElementById("realCamera").srcObject = stream;
-    })
-    .catch(function(err) {
-      alert("Camera error: " + err);
-    });
-}
-</script>
-    <script>
-function openRealCamera() {
-  navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
       document.getElementById("realCamera").srcObject = stream;
     })
-    .catch(err => {
-      alert("Camera error: " + err);
-    });
+    .catch(err => alert("Camera error: " + err));
 }
 </script>
+
   <script src="index.js"></script>
 </body>
 </html>
