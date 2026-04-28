@@ -63,9 +63,8 @@
     <div class="header-tagline">Your Gateway to the World</div>
 
     <div class="header-actions">
-<button onclick="openDashboard()">
-📷 Live Monitoring
-</button>  display:inline-flex;
+<a href="https://view-fia-live.base44.app" title="Live Monitoring" style="
+  display:inline-flex;
   align-items:center;
   justify-content:center;
   height:40px;
@@ -381,66 +380,14 @@
     ">✖</button>
 
     <!-- الكاميرا -->
- <div id="cameraModal" style="
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.9);
-  z-index:9999;
-  align-items:center;
-  justify-content:center;
-">
-
-  <div style="
-    width:90%;
-    height:85%;
-    background:#0b1a2b;
-    border-radius:12px;
-    padding:20px;
-    display:flex;
-    gap:20px;
-  ">
-
-    <!-- إغلاق -->
-    <button id="closeCameraBtn" style="
-      position:absolute;
-      top:10px;
-      right:10px;
-      background:red;
-      color:white;
-      border:none;
-      border-radius:6px;
-      padding:6px 10px;
-      cursor:pointer;
-      z-index:10;
-    ">✖</button>
-
-    <!-- الكاميرا -->
-    <div style="flex:1;">
-      <h3>Live Camera</h3>
-      <video id="liveVideo" autoplay style="width:100%; border-radius:10px;"></video>
-      <button onclick="startCamera()">Start Camera</button>
-      <button onclick="analyze()">Analyze Scene</button>
-    </div>
-
-    <!-- النتائج -->
-    <div style="flex:1;">
-      <h3>AI Analysis</h3>
-      <div id="aiResults" style="
-        background:#132b45;
-        padding:15px;
-        border-radius:10px;
-        margin-top:10px;
-      ">
-        Waiting...
-      </div>
-    </div>
+    <iframe 
+      src="https://view-fia-live.base44.app"
+      width="100%" 
+      height="100%" 
+      style="border:none;">
+    </iframe>
 
   </div>
-</div>
 </div>
 </body>
 </html>
